@@ -48,9 +48,6 @@ export default function GameUI() {
             const ctx = canvas.getContext("2d");
             ctx.fillStyle = "#222";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = "#444";
-            ctx.lineWidth = 1;
-            ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
             const block = new blockType.BlockClass(
                 canvas.width / 2,
