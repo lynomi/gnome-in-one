@@ -2,7 +2,7 @@ import Matter from "matter-js";
 import { Block } from "./Block";
 
 export class Ramp extends Block {
-    constructor(x, y, width, height, options = {}) {
+    constructor(x, y, width = 130, height = 80, options = {}) {
         const {
             angle = 0,
             isStatic = true,

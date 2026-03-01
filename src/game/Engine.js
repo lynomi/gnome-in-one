@@ -135,4 +135,16 @@ export class Engine {
             this.render();
         }
     }
+
+    // adds a block to the course
+    addBlock(BlockClass, x, y, options = {}) {
+        if (!this.course) return null;
+
+        const block = new BlockClass(x, y, undefined, undefined, options);
+        this.course.blocks.push(block);
+        Matter.World.add(this.engine.world, block.body);
+        this.render();
+
+        return block;
+    }
 }

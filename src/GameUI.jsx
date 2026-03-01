@@ -10,7 +10,7 @@ const BLOCK_TYPES = [
         description: "ramp",
         BlockClass: Ramp,
         defaultWidth: 130,
-        defaultHeight: 18
+        defaultHeight: 80
     }
 ];
 
@@ -56,7 +56,7 @@ export default function GameUI() {
                 canvas.width / 2,
                 canvas.height / 2,
                 blockType.defaultWidth * 0.5,
-                blockType.defaultHeight * 1.5
+                blockType.defaultHeight * 0.5
             );
             block.render(ctx);
         });
@@ -86,6 +86,34 @@ export default function GameUI() {
         }
     };
 
+    // drag handler
+    const handleBlockDragStart = (e, blockType) => {
+        e.dataTransfer.effectAllowed = "copy";
+        e.dataTransfer.setData("blockTypeId", blockType.id);
+        setSelected(blockType.id);
+    };
+
+    const handleCanvasDragOver = (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "copy";
+    };
+
+    const handleCanvasDrop = (e) => {
+        e.preventDefault();
+
+        const blockTypeId = e.dataTransfer.getData("blockTypeId");
+        if (!blockTypeId || !engineRef.current || !canvasRef.current) return;
+
+        const blockType = BLOCK_TYPES.find(bt => bt.id === blockTypeId);
+        if (!blockType) return;
+
+        const rect = canvasRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        engineRef.current.addBlock(blockType.BlockClass, x, y);
+    };
+
     return (
         <div style={css.root}>
 
@@ -96,6 +124,8 @@ export default function GameUI() {
                     {BLOCK_TYPES.map(blockType => (
                         <div
                             key={blockType.id}
+                            draggable
+                            onDragStart={(e) => handleBlockDragStart(e, blockType)}
                             onClick={() => setSelected(blockType.id)}
                             style={css.blockPreview}
                         >
@@ -112,7 +142,14 @@ export default function GameUI() {
 
             {/* playfield and play button*/}
             <main style={css.main}>
-                <canvas ref={canvasRef} width={1000} height={500} style={css.playfield} />
+                <canvas
+                    ref={canvasRef}
+                    width={1000}
+                    height={500}
+                    style={css.playfield}
+                    onDragOver={handleCanvasDragOver}
+                    onDrop={handleCanvasDrop}
+                />
                 <button style={css.runButton} onClick={isRunning ? handleReset : handleRun}>
                     {isRunning ? "Reset" : "Run"}
                 </button>
@@ -164,7 +201,7 @@ const css = {
         background: "#222",
         border: "none",
         borderRadius: "8px",
-        cursor: "pointer",
+        cursor: "grab",
         transition: "all 0.2s",
         userSelect: "none"
     },
