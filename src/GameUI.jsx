@@ -1,9 +1,17 @@
 import { useState, useRef, useEffect } from "react";
 import { Engine } from "./game/Engine";
+import { Ramp } from "./game/Ramp";
 
-// filler for future blocks
-const BLOCKS = [
-    { id: "ramp", label: "ramp", color: "#ffffff" }
+// Block type definitions - easy to extend with more types
+const BLOCK_TYPES = [
+    {
+        id: "ramp",
+        label: "Ramp",
+        description: "ramp",
+        BlockClass: Ramp,
+        defaultWidth: 130,
+        defaultHeight: 18
+    }
 ];
 
 export default function GameUI() {
@@ -11,6 +19,7 @@ export default function GameUI() {
     const [isRunning, setIsRunning] = useState(false);
     const canvasRef = useRef(null);
     const engineRef = useRef(null);
+    const blockPreviewRefs = useRef({});
 
     // engine
     useEffect(() => {
@@ -28,6 +37,29 @@ export default function GameUI() {
         return () => {
             engine.stop();
         };
+    }, []);
+
+    // render block type previews
+    useEffect(() => {
+        BLOCK_TYPES.forEach(blockType => {
+            const canvas = blockPreviewRefs.current[blockType.id];
+            if (!canvas) return;
+
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#222";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = "#444";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+            const block = new blockType.BlockClass(
+                canvas.width / 2,
+                canvas.height / 2,
+                blockType.defaultWidth * 0.5,
+                blockType.defaultHeight * 1.5
+            );
+            block.render(ctx);
+        });
     }, []);
 
     // run button
@@ -60,18 +92,22 @@ export default function GameUI() {
             {/* block panel */}
             <div style={css.leftPanel}>
                 <h3 style={css.leftPanelTitle}>Blocks</h3>
-                {BLOCKS.map(block => (
-                    <button
-                        key={block.id}
-                        onClick={() => setSelected(block.id)}
-                        style={{
-                            ...css.leftPanelButton,
-                            backgroundColor: selected === block.id ? "#444" : "#222"
-                        }}
-                    >
-                        {block.label}
-                    </button>
-                ))}
+                <div style={css.blockGrid}>
+                    {BLOCK_TYPES.map(blockType => (
+                        <div
+                            key={blockType.id}
+                            onClick={() => setSelected(blockType.id)}
+                            style={css.blockPreview}
+                        >
+                            <canvas
+                                ref={el => blockPreviewRefs.current[blockType.id] = el}
+                                width={80}
+                                height={80}
+                                style={css.previewCanvas}
+                            />
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {/* playfield and play button*/}
@@ -112,6 +148,30 @@ const css = {
         margin: "0 0 16px 0",
         fontSize: "16px",
         fontWeight: "bold"
+    },
+
+    blockGrid: {
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px"
+    },
+
+    blockPreview: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "8px",
+        background: "#222",
+        border: "none",
+        borderRadius: "8px",
+        cursor: "pointer",
+        transition: "all 0.2s",
+        userSelect: "none"
+    },
+
+    previewCanvas: {
+        marginBottom: "0",
+        borderRadius: "4px"
     },
 
     leftPanelButton: {
