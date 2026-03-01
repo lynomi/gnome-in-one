@@ -83,12 +83,18 @@ export class Engine {
             cancelAnimationFrame(this.animationId);
         }
 
-        const animate = () => {
-            Matter.Engine.update(this.engine);
-            this.render();
+        // CAPS 60 FPS
+        const FRAME_MS = 1000 / 60;
+        let lastTime = 0;
+
+        const animate = (timestamp) => {
             this.animationId = requestAnimationFrame(animate);
+            if (timestamp - lastTime < FRAME_MS) return;
+            lastTime = timestamp - ((timestamp - lastTime) % FRAME_MS);
+            Matter.Engine.update(this.engine, FRAME_MS);
+            this.render();
         };
-        animate();
+        requestAnimationFrame(animate);
     }
 
     // stops simulation
