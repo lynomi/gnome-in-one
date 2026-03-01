@@ -17,9 +17,12 @@ const BLOCK_TYPES = [
 export default function GameUI() {
     const [selected, setSelected] = useState(null);
     const [isRunning, setIsRunning] = useState(false);
+    const [draggedBlock, setDraggedBlock] = useState(null);
+    const [dragPosition, setDragPosition] = useState(null);
     const canvasRef = useRef(null);
     const engineRef = useRef(null);
     const blockPreviewRefs = useRef({});
+    const animationFrameRef = useRef(null);
 
     // engine
     useEffect(() => {
@@ -39,6 +42,25 @@ export default function GameUI() {
         };
     }, []);
 
+    // render drag preview
+    useEffect(() => {
+        if (!draggedBlock || !dragPosition || !engineRef.current) return;
+
+        const renderPreview = () => {
+            engineRef.current.render();
+            engineRef.current.renderPreview(draggedBlock.BlockClass, dragPosition.x, dragPosition.y);
+            animationFrameRef.current = requestAnimationFrame(renderPreview);
+        };
+
+        animationFrameRef.current = requestAnimationFrame(renderPreview);
+
+        return () => {
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+            }
+        };
+    }, [draggedBlock, dragPosition]);
+
     // render block type previews
     useEffect(() => {
         BLOCK_TYPES.forEach(blockType => {
@@ -48,6 +70,9 @@ export default function GameUI() {
             const ctx = canvas.getContext("2d");
             ctx.fillStyle = "#222";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = "#444";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
             const block = new blockType.BlockClass(
                 canvas.width / 2,
@@ -88,11 +113,17 @@ export default function GameUI() {
         e.dataTransfer.effectAllowed = "copy";
         e.dataTransfer.setData("blockTypeId", blockType.id);
         setSelected(blockType.id);
+        setDraggedBlock(blockType);
     };
 
     const handleCanvasDragOver = (e) => {
         e.preventDefault();
         e.dataTransfer.dropEffect = "copy";
+
+        const rect = canvasRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        setDragPosition({ x, y });
     };
 
     const handleCanvasDrop = (e) => {
@@ -109,6 +140,14 @@ export default function GameUI() {
         const y = e.clientY - rect.top;
 
         engineRef.current.addBlock(blockType.BlockClass, x, y);
+
+        setDraggedBlock(null);
+        setDragPosition(null);
+    };
+
+    const handleCanvasLeave = () => {
+        setDraggedBlock(null);
+        setDragPosition(null);
     };
 
     return (
@@ -146,6 +185,7 @@ export default function GameUI() {
                     style={css.playfield}
                     onDragOver={handleCanvasDragOver}
                     onDrop={handleCanvasDrop}
+                    onDragLeave={handleCanvasLeave}
                 />
                 <button style={css.runButton} onClick={isRunning ? handleReset : handleRun}>
                     {isRunning ? "Reset" : "Run"}

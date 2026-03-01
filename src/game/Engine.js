@@ -3,9 +3,7 @@ import { Ball } from "./Ball";
 import { Course } from "./Course";
 
 export class Engine {
-    // 800 x 400 canvas
-    // change this if we want to change the dimensions later
-    constructor(canvas, width = 800, height = 400) {
+    constructor(canvas, width = 1000, height = 500) {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
         this.width = width;
@@ -146,5 +144,15 @@ export class Engine {
         this.render();
 
         return block;
+    }
+    // preview
+    renderPreview(BlockClass, x, y) {
+        const block = new BlockClass(x, y);
+        const ctx = this.ctx;
+
+        ctx.save();
+        ctx.globalAlpha = 0.5;
+        block.render(ctx);
+        ctx.restore();
     }
 }
