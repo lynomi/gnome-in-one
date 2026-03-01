@@ -1,6 +1,7 @@
-import Matter from "matter-js"
+import Matter from "matter-js";
+import { Block } from "./Block";
 
-export class Ramp {
+export class Ramp extends Block {
     constructor(x, y, width, height, options = {}) {
         const {
             angle = 0,
@@ -10,29 +11,33 @@ export class Ramp {
             ...bodyOptions
         } = options;
 
-        this.width = width;
-        this.height = height;
-        this.color = color;
-        
-        // Create triangular body (3 sides)
-        this.body = Matter.Bodies.fromVertices(
-        x,
-        y,
-        [
-            { x: -width / 2, y: height / 2 },   // bottom left
-            { x: width / 2,  y: height / 2 },   // bottom right
-            { x: -width / 2, y: -height / 2 }   // top left
-        ],
-        {
-            isStatic,
+        super(x, y, width, height, {
             angle,
+            isStatic,
+            color,
             label,
-            friction: 0.6,
-            restitution: 0.1,
             ...bodyOptions
-        },
-        true
-    );
+        });
+
+        // Replace rectangular body with triangular body
+        this.body = Matter.Bodies.fromVertices(
+            x,
+            y,
+            [
+                { x: -width / 2, y: height / 2 },   // bottom left
+                { x: width / 2, y: height / 2 },   // bottom right
+                { x: -width / 2, y: -height / 2 }   // top left
+            ],
+            {
+                isStatic,
+                angle,
+                label,
+                friction: 0.6,
+                restitution: 0.1,
+                ...bodyOptions
+            },
+            true
+        );
     }
 
     render(ctx) {
