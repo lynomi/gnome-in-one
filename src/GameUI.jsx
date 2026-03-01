@@ -25,7 +25,7 @@ export default function GameUI() {
     useEffect(() => {
         if (!canvasRef.current) return;
 
-        const engine = new Engine(canvasRef.current, 800, 400);
+        const engine = new Engine(canvasRef.current, 1000, 500);
         engineRef.current = engine;
 
         // creates ball
@@ -66,7 +66,7 @@ export default function GameUI() {
     const handleRun = () => {
         if (engineRef.current) {
             engineRef.current.stop();
-            engineRef.current.resetBall(250, 200);
+            engineRef.current.resetBall(300, 250);
 
             // BALL VELOCITY
             if (engineRef.current.ball) {
@@ -112,7 +112,7 @@ export default function GameUI() {
 
             {/* playfield and play button*/}
             <main style={css.main}>
-                <canvas ref={canvasRef} width={800} height={400} style={css.playfield} />
+                <canvas ref={canvasRef} width={1000} height={500} style={css.playfield} />
                 <button style={css.runButton} onClick={isRunning ? handleReset : handleRun}>
                     {isRunning ? "Reset" : "Run"}
                 </button>
@@ -195,8 +195,8 @@ const css = {
     },
 
     playfield: {
-        height: "400px",
-        width: "800px",
+        height: "500px",
+        width: "1000px",
         background: "#1a1a1a",
         border: "1px solid #333",
         borderRadius: "8px"
