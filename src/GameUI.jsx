@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import { Engine } from "./game/Engine";
 import { Ramp } from "./game/Ramp";
 
-// Block type definitions - easy to extend with more types
 const BLOCK_TYPES = [
     {
         id: "ramp",
@@ -90,7 +89,7 @@ export default function GameUI() {
     const handleRun = () => {
         if (engineRef.current) {
             engineRef.current.stop();
-            engineRef.current.resetBall(300, 250);
+            engineRef.current.resetBall(400, 200);
 
             // BALL VELOCITY
             if (engineRef.current.ball) {
@@ -105,7 +104,7 @@ export default function GameUI() {
     const handleReset = () => {
         if (engineRef.current) {
             engineRef.current.stop();
-            engineRef.current.resetBall(250, 200);
+            engineRef.current.resetBall(400, 200);
             setIsRunning(false);
         }
     };
@@ -192,7 +191,7 @@ export default function GameUI() {
     );
 }
 
-// styles (might move this to another file)
+// styles
 
 const css = {
     root: {
