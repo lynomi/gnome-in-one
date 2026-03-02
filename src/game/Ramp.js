@@ -31,8 +31,8 @@ export class Ramp extends Block {
                 isStatic,
                 angle,
                 label,
-                friction: 0.01,
-                restitution: 0.4,
+                friction: 0.001,
+                restitution: 0.2,
                 ...bodyOptions
             }
         );
