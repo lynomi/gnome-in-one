@@ -18,8 +18,8 @@ export class Block {
             isStatic,
             angle,
             label,
-            friction: 0.6,
-            restitution: 0.1,
+            friction: 0.01,
+            restitution: 0.4,
             ...bodyOptions
         });
     }
