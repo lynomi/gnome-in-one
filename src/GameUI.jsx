@@ -292,6 +292,7 @@ const css = {
     // blocks panel  
     leftPanel: {
         width: "120px",
+        height: "594px",
         flexShrink: 0,
         background: "#111",
         padding: "16px",
