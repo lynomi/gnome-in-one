@@ -1,6 +1,7 @@
 import Matter from "matter-js";
 import { Ball } from "./Ball";
 import { Course } from "./Course";
+import golfSwingSrc from '/src/assets/golfswing.mp3';
 
 export class Engine {
     constructor(canvas, width = 1000, height = 500, onWin, onLoss) {
@@ -46,6 +47,9 @@ export class Engine {
         this.addBall(startPos.x, startPos.y, 8, velocity.x, velocity.y);
 
         this.render();
+
+        //swing sound
+        this.swingSound = new Audio(golfSwingSrc);
     }
 
     createWalls() {
@@ -90,6 +94,7 @@ export class Engine {
 
     // adds ball to engine
     addBall(x, y, radius = 8, vx = 5, vy = -5) {
+
         this.ball = new Ball(x, y, radius);
         this.ball.setVelocity(vx, vy);
         Matter.World.add(this.engine.world, this.ball.body);
@@ -101,6 +106,8 @@ export class Engine {
 
     // starts physics sim
     start() {
+        this.swingSound.currentTime = 0;
+        this.swingSound.play();
         // stops last animation
         if (this.animationId) {
             cancelAnimationFrame(this.animationId);
