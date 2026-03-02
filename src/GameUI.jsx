@@ -29,8 +29,8 @@ export default function GameUI() {
         const engine = new Engine(canvasRef.current, 1000, 500);
         engineRef.current = engine;
 
-        // creates ball
-        engine.addBall(400, 200, 8, 5, -5);
+        // creates ball + start pos
+        engine.addBall(200, 190, 8, 5, -5);
 
         // render initial state to show blocks
         engine.render();
@@ -86,7 +86,8 @@ export default function GameUI() {
     const handleRun = () => {
         if (engineRef.current) {
             engineRef.current.stop();
-            engineRef.current.resetBall(400, 200);
+            // sets ball start pos when hitting run
+            engineRef.current.resetBall(200, 190);
 
             // BALL VELOCITY
             if (engineRef.current.ball) {
@@ -101,7 +102,8 @@ export default function GameUI() {
     const handleReset = () => {
         if (engineRef.current) {
             engineRef.current.stop();
-            engineRef.current.resetBall(400, 200);
+            // sets ball start pos when resetting
+            engineRef.current.resetBall(200, 190);
             setIsRunning(false);
         }
     };
