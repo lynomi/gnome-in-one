@@ -50,6 +50,14 @@ export class Course {
         if (bodies.length) {
             Matter.World.add(this.engine.world, bodies);
         }
+
+        this.blockCount = this.blocks.length;
+    }
+
+    clearBlocks() {
+        const placed = this.blocks.slice(this.blockCount);
+        placed.forEach(block => Matter.World.remove(this.engine.world, block.body));
+        this.blocks = this.blocks.slice(0, this.blockCount);
     }
 
     setBall(ball) {

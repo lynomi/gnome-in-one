@@ -152,6 +152,13 @@ export class Engine {
 
         return block;
     }
+    clearBlocks() {
+        if (this.course) {
+            this.course.clearBlocks();
+        }
+        this.render();
+    }
+
     // preview
     renderPreview(BlockClass, x, y) {
         const block = new BlockClass(x, y);

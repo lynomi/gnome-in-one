@@ -62,7 +62,7 @@ export default function GameUI() {
         };
     }, [selected, previewPosition]);
 
-    // render block type previews
+    // render block type preview
     useEffect(() => {
         BLOCK_TYPES.forEach(blockType => {
             const canvas = blockPreviewRefs.current[blockType.id];
@@ -102,6 +102,7 @@ export default function GameUI() {
     const handleReset = () => {
         if (engineRef.current) {
             engineRef.current.stop();
+            engineRef.current.clearBlocks();
             // sets ball start pos when resetting
             engineRef.current.resetBall(200, 190);
             setIsRunning(false);
@@ -190,7 +191,7 @@ export default function GameUI() {
     );
 }
 
-// styles
+// STYLES
 
 const css = {
     root: {
