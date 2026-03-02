@@ -2,27 +2,24 @@ import Matter from "matter-js";
 import { Block } from "./Block";
 import { Hole } from "./Hole";
 
-const DEFAULT_MAP = {
-    hole: { x: 735, y: 330, radius: 12 },
-    obstacles: [
-        { id: "ramp-1", x: 240, y: 260, width: 130, height: 18, angle: -0.25 },
-        { id: "ramp-2", x: 460, y: 160, width: 160, height: 18, angle: 0.3 },
-        { id: "block-3", x: 620, y: 260, width: 90, height: 18, angle: 0 }
-    ]
-};
-
 export class Course {
-    constructor(engine, ctx, width, height, map = DEFAULT_MAP) {
+    constructor(engine, ctx, width, height, map, onWin, onLoss) {
         this.engine = engine;
         this.ctx = ctx;
         this.width = width;
         this.height = height;
         this.map = map;
+        this.onWin = onWin || (() => { });
+        this.onLoss = onLoss || (() => { });
 
         this.blocks = [];
         this.hole = null;
         this.ball = null;
+
+        // Game state
         this.ballInHole = false;
+        this.ballStopped = false;
+        this.isRunning = false;
 
         this.buildMap();
         this.bindCollisions();
@@ -63,12 +60,34 @@ export class Course {
     setBall(ball) {
         this.ball = ball;
         this.ballInHole = false;
+        this.ballStopped = false;
+        this.isRunning = false;
     }
 
     resetBall() {
         if (!this.ball) return;
         this.ballInHole = false;
+        this.ballStopped = false;
+        this.isRunning = false;
         Matter.Body.setStatic(this.ball.body, false);
+    }
+
+    startSimulation() {
+        this.isRunning = true;
+    }
+
+    update() {
+        if (!this.isRunning || !this.ball || this.ballInHole || this.ballStopped) return;
+
+        // Check if ball stopped moving
+        const velocity = this.ball.body.velocity;
+        const speed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+
+        // Let gravity and friction settle it. If speed is very low and it's practically stationary
+        if (speed < 0.1 && this.ball.body.angularVelocity < 0.05) {
+            this.ballStopped = true;
+            this.onLoss();
+        }
     }
 
     bindCollisions() {
@@ -81,10 +100,12 @@ export class Course {
 
                 if (isBallHole) {
                     this.ballInHole = true;
+                    this.isRunning = false;
                     Matter.Body.setVelocity(this.ball.body, { x: 0, y: 0 });
                     Matter.Body.setAngularVelocity(this.ball.body, 0);
                     Matter.Body.setPosition(this.ball.body, this.hole.body.position);
                     Matter.Body.setStatic(this.ball.body, true);
+                    this.onWin();
                     break;
                 }
             }

@@ -3,12 +3,15 @@ import { Ball } from "./Ball";
 import { Course } from "./Course";
 
 export class Engine {
-    constructor(canvas, width = 1000, height = 500) {
+    constructor(canvas, width = 1000, height = 500, onWin, onLoss) {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
         this.width = width;
         this.height = height;
         this.wallThickness = 20;
+
+        this.onWin = onWin || (() => { });
+        this.onLoss = onLoss || (() => { });
 
         // create engine
         this.engine = Matter.Engine.create();
@@ -22,7 +25,27 @@ export class Engine {
         this.animationId = null;
 
         // course (obstacles + hole)
-        this.course = new Course(this.engine, this.ctx, this.width, this.height);
+        this.course = null;
+        this.currentLevelConfig = null;
+    }
+
+    loadLevel(levelConfig) {
+        if (this.course) {
+            // Remove existing bodies
+            Matter.World.clear(this.engine.world);
+            Matter.Engine.clear(this.engine);
+            this.createWalls();
+            this.ball = null;
+        }
+
+        this.currentLevelConfig = levelConfig;
+        this.course = new Course(this.engine, this.ctx, this.width, this.height, levelConfig, this.onWin, this.onLoss);
+
+        // Add ball at starting position
+        const { startPos, velocity } = levelConfig;
+        this.addBall(startPos.x, startPos.y, 8, velocity.x, velocity.y);
+
+        this.render();
     }
 
     createWalls() {
@@ -83,6 +106,10 @@ export class Engine {
             cancelAnimationFrame(this.animationId);
         }
 
+        if (this.course) {
+            this.course.startSimulation();
+        }
+
         // CAPS 60 FPS
         const FRAME_MS = 1000 / 60;
         let lastTime = 0;
@@ -92,6 +119,9 @@ export class Engine {
             if (timestamp - lastTime < FRAME_MS) return;
             lastTime = timestamp - ((timestamp - lastTime) % FRAME_MS);
             Matter.Engine.update(this.engine, FRAME_MS);
+            if (this.course) {
+                this.course.update();
+            }
             this.render();
         };
         requestAnimationFrame(animate);
@@ -131,9 +161,13 @@ export class Engine {
     }
 
     // resets ball to start
-    resetBall(x, y) {
+    resetBall() {
+        if (!this.currentLevelConfig) return;
+
         if (this.ball) {
-            this.ball.reset(x, y);
+            const { startPos, velocity } = this.currentLevelConfig;
+            this.ball.reset(startPos.x, startPos.y);
+            this.ball.setVelocity(velocity.x, velocity.y);
             if (this.course) {
                 this.course.resetBall();
             }
