@@ -16,7 +16,7 @@ export class Engine {
 
         // create engine
         this.engine = Matter.Engine.create();
-        this.engine.world.gravity.y = 1;
+        this.engine.world.gravity.y = 1.2;
 
         // create walls
         this.createWalls();
