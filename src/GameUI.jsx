@@ -17,8 +17,7 @@ const BLOCK_TYPES = [
 export default function GameUI() {
     const [selected, setSelected] = useState(null);
     const [isRunning, setIsRunning] = useState(false);
-    const [draggedBlock, setDraggedBlock] = useState(null);
-    const [dragPosition, setDragPosition] = useState(null);
+    const [previewPosition, setPreviewPosition] = useState(null);
     const canvasRef = useRef(null);
     const engineRef = useRef(null);
     const blockPreviewRefs = useRef({});
@@ -42,13 +41,16 @@ export default function GameUI() {
         };
     }, []);
 
-    // render drag preview
+    // render block preview
     useEffect(() => {
-        if (!draggedBlock || !dragPosition || !engineRef.current) return;
+        if (!selected || !previewPosition || !engineRef.current) return;
+
+        const blockType = BLOCK_TYPES.find(bt => bt.id === selected);
+        if (!blockType) return;
 
         const renderPreview = () => {
             engineRef.current.render();
-            engineRef.current.renderPreview(draggedBlock.BlockClass, dragPosition.x, dragPosition.y);
+            engineRef.current.renderPreview(blockType.BlockClass, previewPosition.x, previewPosition.y);
             animationFrameRef.current = requestAnimationFrame(renderPreview);
         };
 
@@ -59,7 +61,7 @@ export default function GameUI() {
                 cancelAnimationFrame(animationFrameRef.current);
             }
         };
-    }, [draggedBlock, dragPosition]);
+    }, [selected, previewPosition]);
 
     // render block type previews
     useEffect(() => {
@@ -108,31 +110,26 @@ export default function GameUI() {
         }
     };
 
-    // drag handler
-    const handleBlockDragStart = (e, blockType) => {
-        e.dataTransfer.effectAllowed = "copy";
-        e.dataTransfer.setData("blockTypeId", blockType.id);
-        setSelected(blockType.id);
-        setDraggedBlock(blockType);
+    // click to select block type
+    const handleSelectBlockType = (blockType) => {
+        setSelected(selected === blockType.id ? null : blockType.id);
     };
 
-    const handleCanvasDragOver = (e) => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = "copy";
+    // move mouse for preview
+    const handleCanvasMouseMove = (e) => {
+        if (!selected || !canvasRef.current) return;
 
         const rect = canvasRef.current.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        setDragPosition({ x, y });
+        setPreviewPosition({ x, y });
     };
 
-    const handleCanvasDrop = (e) => {
-        e.preventDefault();
+    // canvas click to place block
+    const handleCanvasClick = (e) => {
+        if (!selected || !engineRef.current || !canvasRef.current) return;
 
-        const blockTypeId = e.dataTransfer.getData("blockTypeId");
-        if (!blockTypeId || !engineRef.current || !canvasRef.current) return;
-
-        const blockType = BLOCK_TYPES.find(bt => bt.id === blockTypeId);
+        const blockType = BLOCK_TYPES.find(bt => bt.id === selected);
         if (!blockType) return;
 
         const rect = canvasRef.current.getBoundingClientRect();
@@ -140,14 +137,13 @@ export default function GameUI() {
         const y = e.clientY - rect.top;
 
         engineRef.current.addBlock(blockType.BlockClass, x, y);
-
-        setDraggedBlock(null);
-        setDragPosition(null);
+        setSelected(null);
+        setPreviewPosition(null);
     };
 
+    // disables preview when leaving canvas
     const handleCanvasLeave = () => {
-        setDraggedBlock(null);
-        setDragPosition(null);
+        setPreviewPosition(null);
     };
 
     return (
@@ -160,10 +156,11 @@ export default function GameUI() {
                     {BLOCK_TYPES.map(blockType => (
                         <div
                             key={blockType.id}
-                            draggable
-                            onDragStart={(e) => handleBlockDragStart(e, blockType)}
-                            onClick={() => setSelected(blockType.id)}
-                            style={css.blockPreview}
+                            onClick={() => handleSelectBlockType(blockType)}
+                            style={{
+                                ...css.blockPreview,
+                                background: selected === blockType.id ? "#333" : "#222",
+                            }}
                         >
                             <canvas
                                 ref={el => blockPreviewRefs.current[blockType.id] = el}
@@ -183,9 +180,9 @@ export default function GameUI() {
                     width={1000}
                     height={500}
                     style={css.playfield}
-                    onDragOver={handleCanvasDragOver}
-                    onDrop={handleCanvasDrop}
-                    onDragLeave={handleCanvasLeave}
+                    onClick={handleCanvasClick}
+                    onMouseMove={handleCanvasMouseMove}
+                    onMouseLeave={handleCanvasLeave}
                 />
                 <button style={css.runButton} onClick={isRunning ? handleReset : handleRun}>
                     {isRunning ? "Reset" : "Run"}
@@ -238,7 +235,7 @@ const css = {
         background: "#222",
         border: "none",
         borderRadius: "8px",
-        cursor: "grab",
+        cursor: "pointer",
         transition: "all 0.2s",
         userSelect: "none"
     },
