@@ -19,14 +19,13 @@ export class Ramp extends Block {
             ...bodyOptions
         });
 
-        // Replace rectangular body with triangular body
         this.body = Matter.Bodies.fromVertices(
             x,
             y,
             [
-                { x: -width / 2, y: height / 2 },   // bottom left
-                { x: width / 2, y: height / 2 },   // bottom right
-                { x: -width / 2, y: -height / 2 }   // top left
+                { x: -width / 3, y: height / 3 },   // bottom left
+                { x: -width / 3, y: -2 * height / 3 },  // top left
+                { x: 2 * width / 3, y: height / 3 }     // bottom right
             ],
             {
                 isStatic,
@@ -35,8 +34,7 @@ export class Ramp extends Block {
                 friction: 0.6,
                 restitution: 0.1,
                 ...bodyOptions
-            },
-            true
+            }
         );
     }
 
@@ -50,12 +48,11 @@ export class Ramp extends Block {
         ctx.fillStyle = this.color;
 
         ctx.beginPath();
-        ctx.moveTo(-this.width / 2, this.height / 2);  // bottom left
-        ctx.lineTo(this.width / 2, this.height / 2);   // bottom right
-        ctx.lineTo(-this.width / 2, -this.height / 2); // top left
+        ctx.moveTo(-this.width / 3, this.height / 3); // bottom left
+        ctx.lineTo(-this.width / 3, -2 * this.height / 3); // top left
+        ctx.lineTo(2 * this.width / 3, this.height / 3); // bottom right
         ctx.closePath();
         ctx.fill();
-
         ctx.restore();
     }
 }
