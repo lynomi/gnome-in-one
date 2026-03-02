@@ -111,7 +111,7 @@ export class Engine {
         const ctx = this.ctx;
 
         // clear canvas
-        ctx.fillStyle = "#1a1a1a";
+        ctx.fillStyle = "#111"; // PLAYFIELD BG COLOR
         ctx.fillRect(0, 0, this.width, this.height);
 
         // draw border
@@ -119,6 +119,7 @@ export class Engine {
         ctx.lineWidth = 1;
         ctx.strokeRect(0, 0, this.width, this.height);
 
+        // render course
         if (this.course) {
             this.course.render(ctx);
         }

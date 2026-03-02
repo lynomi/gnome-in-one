@@ -265,18 +265,15 @@ const css = {
     },
 
     playfield: {
-        height: "500px",
-        width: "1000px",
-        background: "#1a1a1a",
         border: "1px solid #333",
         borderRadius: "8px"
     },
 
     runButton: {
         padding: "12px 24px",
-        background: "#222",
+        background: "#111",
         color: "#fff",
-        border: "1px solid #444",
+        border: "1px solid #333",
         borderRadius: "8px",
         cursor: "pointer",
         transition: "background 0.2s"
