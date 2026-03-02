@@ -4,8 +4,9 @@ export class Ball {
     constructor(x, y, radius = 10, options = {}) {
         this.radius = radius;
         this.body = Matter.Bodies.circle(x, y, radius, {
-            friction: 0.05,
-            restitution: 0.9, // bounce setting
+            friction: 0.001,
+            frictionAir: 0.005,
+            restitution: 0.85, // bounce setting
             density: 0.04,
             label: "ball",
             ...options
@@ -15,8 +16,9 @@ export class Ball {
     // creates the ball
     static createCircle(x, y, radius = 10, options = {}) {
         return Matter.Bodies.circle(x, y, radius, {
-            friction: 0.05,
-            restitution: 0.9,
+            friction: 0.001,
+            frictionAir: 0.005,
+            restitution: 0.85,
             density: 0.04,
             label: "ball",
             ...options
