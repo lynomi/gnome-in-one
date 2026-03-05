@@ -39,8 +39,11 @@ export class Ball {
     // resets ball
     reset(x, y) {
         Matter.Body.setPosition(this.body, { x, y });
+        Matter.Body.setAngle(this.body, 0);
         Matter.Body.setVelocity(this.body, { x: 0, y: 0 });
         Matter.Body.setAngularVelocity(this.body, 0);
+        this.body.force = { x: 0, y: 0 };
+        this.body.torque = 0;
         this.trail = [];
     }
 
@@ -57,7 +60,7 @@ export class Ball {
             const r = this.radius * 0.5 * (i / this.trail.length);
             ctx.beginPath();
             ctx.arc(this.trail[i].x, this.trail[i].y, r, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+            ctx.fillStyle = `#fff`;
             ctx.fill();
         }
 

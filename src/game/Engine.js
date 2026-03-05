@@ -157,14 +157,13 @@ export class Engine {
             this.course.startSimulation();
         }
 
-        // CAPS 60 FPS
         const FRAME_MS = 1000 / 60;
         let lastTime = 0;
 
         const animate = (timestamp) => {
             this.animationId = requestAnimationFrame(animate);
             if (timestamp - lastTime < FRAME_MS) return;
-            lastTime = timestamp - ((timestamp - lastTime) % FRAME_MS);
+            lastTime = timestamp;
             Matter.Engine.update(this.engine, FRAME_MS);
             if (this.course) {
                 this.course.update();
@@ -246,8 +245,7 @@ export class Engine {
         this.render();
     }
 
-    // preview
-    // returns true if placing BlockClass at (x,y) won't overlap ball, hole, or existing blocks
+    // returns true if placing block doesnt overlap existing objects
     isValidPlacement(BlockClass, x, y) {
         const tempBlock = new BlockClass(x, y);
         const bodiesToCheck = [];
@@ -259,9 +257,10 @@ export class Engine {
         return Matter.Query.collides(tempBlock.body, bodiesToCheck).length === 0;
     }
 
-    // preview — red tint if placement is invalid
+    // placing preview
     renderPreview(BlockClass, x, y) {
         const block = new BlockClass(x, y);
+        // turns red if invalid
         if (!this.isValidPlacement(BlockClass, x, y)) block.color = "#ff3333";
 
         const ctx = this.ctx;
