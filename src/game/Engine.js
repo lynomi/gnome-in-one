@@ -160,7 +160,7 @@ export class Engine {
         const ctx = this.ctx;
 
         // clear canvas
-        ctx.fillStyle = "#111"; // PLAYFIELD BG COLOR
+        ctx.fillStyle = "#3599d7"; // PLAYFIELD BG COLOR
         ctx.fillRect(0, 0, this.width, this.height);
 
         // draw border

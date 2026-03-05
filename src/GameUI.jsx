@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Engine } from "./game/Engine";
 import { Ramp } from "./game/Ramp";
-import { LEVELS } from "./game/levels";
+import { LEVELS } from "./game/Levels";
 
 const BLOCK_TYPES = [
     {
@@ -221,7 +221,7 @@ export default function GameUI() {
                 <div style={css.header}>
                     <h2>{currentLevelData ? currentLevelData.title : "Gnome-in-one"}</h2>
                     <div style={css.phaseIndicator}>
-                        Phase: <span style={{ fontWeight: 'bold', color: phase === "RESULT" ? "#ffaa00" : "#00ffaa" }}>{phase}</span>
+                        <span style={{ fontWeight: 'bold' }}>PHASE:</span> <span style={{ fontWeight: 'bold', color: phase === "RESULT" ? "#ffaa00" : "#00ffaa" }}>{phase}</span>
                     </div>
                 </div>
 
@@ -241,7 +241,7 @@ export default function GameUI() {
                         <div style={css.overlay}>
                             <h1 style={css.overlayTitle}>{resultMessage}</h1>
                             <div style={css.overlayButtons}>
-                                <button style={css.actionButton} onClick={handleReset}>Retry Level</button>
+                                <button style={css.actionButton} onClick={handleReset}>Retry</button>
                                 {resultMessage === "Hole in One!" && currentLevel < LEVELS.length - 1 && (
                                     <button style={{ ...css.actionButton, background: "#00aa55" }} onClick={handleNextLevel}>Next Level</button>
                                 )}
@@ -294,7 +294,8 @@ const css = {
         width: "120px",
         height: "595px",
         flexShrink: 0,
-        background: "#111",
+        // transparent bg
+        background: "#11111166",
         padding: "16px",
         borderRadius: "8px",
         border: "1px solid #333",
@@ -343,16 +344,16 @@ const css = {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "0 8px",
-        background: "#111",
+        padding: "0 24px",
+        // transparent bg
+        background: "#11111166",
         borderRadius: "8px",
         border: "1px solid #333",
     },
 
     phaseIndicator: {
-        fontSize: "18px",
+        fontSize: "24px",
         padding: "8px 16px",
-        background: "#222",
         borderRadius: "4px"
     },
 
