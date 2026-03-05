@@ -3,6 +3,7 @@ import Matter from "matter-js";
 export class Ball {
     constructor(x, y, radius = 10, options = {}) {
         this.radius = radius;
+        this.trail = [];
         this.body = Matter.Bodies.circle(x, y, radius, {
             friction: 0.001,
             frictionAir: 0.005,
@@ -40,12 +41,25 @@ export class Ball {
         Matter.Body.setPosition(this.body, { x, y });
         Matter.Body.setVelocity(this.body, { x: 0, y: 0 });
         Matter.Body.setAngularVelocity(this.body, 0);
+        this.trail = [];
     }
 
     // render ball
     render(ctx) {
         const { x, y } = this.body.position;
         const angle = this.body.angle;
+
+        // update and draw trail
+        this.trail.push({ x, y });
+        if (this.trail.length > 20) this.trail.shift();
+        for (let i = 0; i < this.trail.length; i++) {
+            const alpha = (i / this.trail.length) * 0.4;
+            const r = this.radius * 0.5 * (i / this.trail.length);
+            ctx.beginPath();
+            ctx.arc(this.trail[i].x, this.trail[i].y, r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+            ctx.fill();
+        }
 
         ctx.save();
         ctx.translate(x, y);
