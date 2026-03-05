@@ -33,6 +33,7 @@ export class Engine {
         // ball and animation frame id
         this.ball = null;
         this.animationId = null;
+        this.showTrajectory = true;
 
         // course (obstacles + hole)
         this.course = null;
@@ -49,6 +50,7 @@ export class Engine {
         }
 
         this.currentLevelConfig = levelConfig;
+        this.showTrajectory = true;
         this.course = new Course(this.engine, this.ctx, this.width, this.height, levelConfig, this.onWin, this.onLoss);
 
         // Add ball at starting position
@@ -111,8 +113,34 @@ export class Engine {
         return this.ball;
     }
 
+    // draws predicted arc using simple gravity sim (no obstacles)
+    renderTrajectory(ctx) {
+        if (!this.ball || !this.currentLevelConfig) return;
+        const { startPos, velocity } = this.currentLevelConfig;
+        const delta = 1000 / 60;
+        const g = this.engine.world.gravity.y * 0.001 * delta * delta; // matches Matter.js Verlet: gravity * scale * delta²
+        let x = startPos.x, y = startPos.y;
+        let vx = velocity.x, vy = velocity.y;
+
+        ctx.save();
+        for (let i = 0; i < 40; i++) {
+            vx *= (1 - 0.005); // frictionAir
+            vy *= (1 - 0.005);
+            vy += g;
+            x += vx;
+            y += vy;
+            if (x < 0 || x > this.width || y < 0 || y > this.height) break;
+            ctx.beginPath();
+            ctx.arc(x, y, 2, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,255,255,${0.6 - i * 0.007})`;
+            ctx.fill();
+        }
+        ctx.restore();
+    }
+
     // starts physics sim
     start() {
+        this.showTrajectory = false;
         if (this.swingBuffer) {
             if (this.audioContext.state === 'suspended') this.audioContext.resume();
             const source = this.audioContext.createBufferSource();
@@ -173,6 +201,11 @@ export class Engine {
             this.course.render(ctx);
         }
 
+        // render trajectory preview (BUILD phase only)
+        if (this.showTrajectory) {
+            this.renderTrajectory(ctx);
+        }
+
         // render ball
         if (this.ball) {
             this.ball.render(ctx);
@@ -187,6 +220,7 @@ export class Engine {
             const { startPos, velocity } = this.currentLevelConfig;
             this.ball.reset(startPos.x, startPos.y);
             this.ball.setVelocity(velocity.x, velocity.y);
+            this.showTrajectory = true;
             if (this.course) {
                 this.course.resetBall();
             }
