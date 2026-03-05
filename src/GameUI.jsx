@@ -175,6 +175,7 @@ export default function GameUI() {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
+        if (!engineRef.current.isValidPlacement(blockType.BlockClass, x, y)) return;
         engineRef.current.addBlock(blockType.BlockClass, x, y);
         setSelected(null);
         setPreviewPosition(null);

@@ -113,7 +113,7 @@ export class Engine {
         return this.ball;
     }
 
-    // draws predicted arc using simple gravity sim (no obstacles)
+    // shows trajectory of ball path
     renderTrajectory(ctx) {
         if (!this.ball || !this.currentLevelConfig) return;
         const { startPos, velocity } = this.currentLevelConfig;
@@ -124,7 +124,7 @@ export class Engine {
 
         ctx.save();
         for (let i = 0; i < 40; i++) {
-            vx *= (1 - 0.005); // frictionAir
+            vx *= (1 - 0.005); // air friction
             vy *= (1 - 0.005);
             vy += g;
             x += vx;
@@ -247,10 +247,24 @@ export class Engine {
     }
 
     // preview
+    // returns true if placing BlockClass at (x,y) won't overlap ball, hole, or existing blocks
+    isValidPlacement(BlockClass, x, y) {
+        const tempBlock = new BlockClass(x, y);
+        const bodiesToCheck = [];
+
+        if (this.ball) bodiesToCheck.push(this.ball.body);
+        if (this.course?.hole) bodiesToCheck.push(this.course.hole.body);
+        if (this.course) bodiesToCheck.push(...this.course.blocks.map(b => b.body));
+
+        return Matter.Query.collides(tempBlock.body, bodiesToCheck).length === 0;
+    }
+
+    // preview — red tint if placement is invalid
     renderPreview(BlockClass, x, y) {
         const block = new BlockClass(x, y);
-        const ctx = this.ctx;
+        if (!this.isValidPlacement(BlockClass, x, y)) block.color = "#ff3333";
 
+        const ctx = this.ctx;
         ctx.save();
         ctx.globalAlpha = 0.5;
         block.render(ctx);
