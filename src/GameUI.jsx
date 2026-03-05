@@ -282,7 +282,7 @@ const css = {
         display: "flex",
         height: "100vh",
         background: "#000000",
-        fontFamily: "'Calibri', system-ui, sans-serif",
+        fontFamily: "wendy-one",
         color: "#ffffff",
         padding: "16px",
         gap: "16px",
