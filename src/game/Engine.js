@@ -14,6 +14,15 @@ export class Engine {
         this.onWin = onWin || (() => { });
         this.onLoss = onLoss || (() => { });
 
+        // web audio api
+        this.audioContext = new AudioContext();
+        this.swingBuffer = null;
+        fetch(golfSwingSrc)
+            .then(r => r.arrayBuffer())
+            .then(buf => this.audioContext.decodeAudioData(buf))
+            .then(decoded => { this.swingBuffer = decoded; })
+            .catch(() => {});
+
         // create engine
         this.engine = Matter.Engine.create();
         this.engine.world.gravity.y = 1.2;
@@ -48,8 +57,6 @@ export class Engine {
 
         this.render();
 
-        //swing sound
-        this.swingSound = new Audio(golfSwingSrc);
     }
 
     createWalls() {
@@ -106,8 +113,13 @@ export class Engine {
 
     // starts physics sim
     start() {
-        this.swingSound.currentTime = 0;
-        this.swingSound.play();
+        if (this.swingBuffer) {
+            if (this.audioContext.state === 'suspended') this.audioContext.resume();
+            const source = this.audioContext.createBufferSource();
+            source.buffer = this.swingBuffer;
+            source.connect(this.audioContext.destination);
+            source.start(0);
+        }
         // stops last animation
         if (this.animationId) {
             cancelAnimationFrame(this.animationId);
