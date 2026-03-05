@@ -4,7 +4,7 @@ export class Hole {
     constructor(x, y, radius, options = {}) {
         const {
             label = "hole",
-            rimColor = "#1b1b1b",
+            rimColor = "#ce1313",
             centerColor = "#000000",
             ...bodyOptions
         } = options;
