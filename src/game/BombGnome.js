@@ -1,7 +1,7 @@
 import { Block } from "./Block";
 import bombGnomeSrc from '/src/assets/bombGnome.png';
 
-const bombImage = new Image();
+export const bombImage = new Image();
 bombImage.src = bombGnomeSrc;
 
 // scale to this height; width derived from PNG aspect ratio once loaded

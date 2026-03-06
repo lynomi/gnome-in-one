@@ -1,7 +1,7 @@
 import Matter from "matter-js";
 import redFlagSrc from '/src/assets/red-flag.svg';
 
-const flag = new Image();
+export const flag = new Image();
 flag.src = redFlagSrc;
 
 export class Hole {

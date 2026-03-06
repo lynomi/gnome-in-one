@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Engine } from "./game/Engine";
 import { Ramp } from "./game/Ramp";
-import { BombGnome } from "./game/BombGnome";
+import { BombGnome, bombImage } from "./game/BombGnome";
+import { flag as flagImage } from "./game/Hole";
 import { LEVELS } from "./game/Levels";
 
 const BLOCK_TYPES = [
@@ -55,8 +56,17 @@ export default function GameUI() {
         // Load initial level
         engine.loadLevel(LEVELS[0]);
 
+        // re-render once async images finish loading (also handles cached images)
+        const rerender = () => engine.render();
+        bombImage.addEventListener('load', rerender);
+        flagImage.addEventListener('load', rerender);
+        if (bombImage.complete) rerender();
+        if (flagImage.complete) rerender();
+
         return () => {
             engine.stop();
+            bombImage.removeEventListener('load', rerender);
+            flagImage.removeEventListener('load', rerender);
         };
     }, []);
 
@@ -88,7 +98,7 @@ export default function GameUI() {
     }, [selected, previewPosition, phase]);
 
     // render block type preview
-    useEffect(() => {
+    const drawBlockPreviews = () => {
         BLOCK_TYPES.forEach(blockType => {
             const canvas = blockPreviewRefs.current[blockType.id];
             if (!canvas) return;
@@ -105,6 +115,12 @@ export default function GameUI() {
             );
             block.render(ctx);
         });
+    };
+
+    useEffect(() => {
+        drawBlockPreviews();
+        bombImage.addEventListener('load', drawBlockPreviews);
+        return () => bombImage.removeEventListener('load', drawBlockPreviews);
     }, []);
 
     // run/swing button
