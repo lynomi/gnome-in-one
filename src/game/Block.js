@@ -5,7 +5,7 @@ export class Block {
         const {
             angle = 0,
             isStatic = true,
-            color = "#6b6b6b",
+            color = "#613f2a",
             label = "block",
             ...bodyOptions
         } = options;

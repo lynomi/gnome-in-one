@@ -92,13 +92,13 @@ export class Course {
 
     bindCollisions() {
         Matter.Events.on(this.engine, "collisionStart", event => {
-            if (!this.ball || !this.hole || this.ballInHole) return;
+            if (!this.ball) return;
 
             for (const pair of event.pairs) {
                 const labels = [pair.bodyA.label, pair.bodyB.label];
-                const isBallHole = labels.includes("ball") && labels.includes("hole");
 
-                if (isBallHole) {
+                // hole
+                if (!this.ballInHole && this.hole && labels.includes("ball") && labels.includes("hole")) {
                     this.ballInHole = true;
                     this.isRunning = false;
                     Matter.Body.setVelocity(this.ball.body, { x: 0, y: 0 });
@@ -107,6 +107,20 @@ export class Course {
                     Matter.Body.setStatic(this.ball.body, true);
                     this.onWin();
                     break;
+                }
+
+                // bombgnome — launch ball away from block center, then remove
+                if (labels.includes("ball") && labels.includes("bombgnome")) {
+                    const bombBody = pair.bodyA.label === "bombgnome" ? pair.bodyA : pair.bodyB;
+                    const ballBody = this.ball.body;
+
+                    const dx = ballBody.position.x - bombBody.position.x;
+                    const dy = ballBody.position.y - bombBody.position.y;
+                    const len = Math.sqrt(dx * dx + dy * dy) || 1;
+                    Matter.Body.setVelocity(ballBody, { x: (dx / len) * 18, y: (dy / len) * 18 });
+
+                    Matter.World.remove(this.engine.world, bombBody);
+                    this.blocks = this.blocks.filter(b => b.body.id !== bombBody.id);
                 }
             }
         });

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Engine } from "./game/Engine";
 import { Ramp } from "./game/Ramp";
+import { BombGnome } from "./game/BombGnome";
 import { LEVELS } from "./game/Levels";
 
 const BLOCK_TYPES = [
@@ -11,6 +12,14 @@ const BLOCK_TYPES = [
         BlockClass: Ramp,
         defaultWidth: 130,
         defaultHeight: 80
+    },
+    {
+        id: "bombgnome",
+        label: "Bomb",
+        description: "bombgnome",
+        BlockClass: BombGnome,
+        defaultWidth: 60,
+        defaultHeight: 40
     }
 ];
 
@@ -175,6 +184,7 @@ export default function GameUI() {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
+        // disallows clicking if placement isnt valid
         if (!engineRef.current.isValidPlacement(blockType.BlockClass, x, y)) return;
         engineRef.current.addBlock(blockType.BlockClass, x, y);
         setSelected(null);
