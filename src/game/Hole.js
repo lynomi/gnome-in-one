@@ -1,11 +1,15 @@
 import Matter from "matter-js";
+import redFlagSrc from '/src/assets/red-flag.svg';
+
+const flag = new Image();
+flag.src = redFlagSrc;
 
 export class Hole {
     constructor(x, y, radius, options = {}) {
         const {
             label = "hole",
-            rimColor = "#ce1313",
-            centerColor = "#000000",
+            rimColor = "#007c25",
+            centerColor = "#009431",
             ...bodyOptions
         } = options;
 
@@ -34,6 +38,14 @@ export class Hole {
         ctx.beginPath();
         ctx.arc(x, y, Math.max(2, this.radius - 3), 0, Math.PI * 2);
         ctx.fill();
+
+        // render flag
+        if (flag.complete) {
+            const flagH = 90;
+            const flagW = flagH * (flag.naturalWidth / flag.naturalHeight);
+            ctx.drawImage(flag, x - flagW / 2, y - this.radius - flagH, flagW, flagH);
+        }
+
         ctx.restore();
     }
 }
