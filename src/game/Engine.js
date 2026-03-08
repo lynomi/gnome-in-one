@@ -3,8 +3,7 @@ import { Ball } from "./Ball";
 import { Course } from "./Course";
 import golfSwingSrc from '/src/assets/golfswing.mp3';
 import bouncedOnceSrc from '/src/assets/bouncedOnce.mp3';
-
-
+import bricksBuildSrc from '/src/assets/bricksBuild.mp3';
 
 export class Engine {
     constructor(canvas, width = 1000, height = 500, onWin, onLoss) {
@@ -236,7 +235,9 @@ export class Engine {
     // adds a block to the course
     addBlock(BlockClass, x, y, options = {}) {
         if (!this.course) return null;
-
+            const sound = new Audio(bricksBuildSrc);
+            sound.volume = 0.5;
+            sound.play();
         const block = new BlockClass(x, y, undefined, undefined, options);
         this.course.blocks.push(block);
         Matter.World.add(this.engine.world, block.body);
@@ -293,7 +294,7 @@ export class Engine {
 
                     const bounce = new Audio(bouncedOnceSrc);
                     bounce.volume = volume;
-                    bounce.currentTime = 0;
+                    bounce.currentTime = 0.1;
                     bounce.play();
                     break;
                 }
