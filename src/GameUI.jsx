@@ -5,6 +5,7 @@ import { Block } from "./game/Block";
 import { BombGnome, bombImage } from "./game/BombGnome";
 import { flag as flagImage } from "./game/Hole";
 import { LEVELS } from "./game/Levels";
+import { SpeedRamp } from "./game/SpeedRamp";
 
 const BLOCK_TYPES = [
     {
@@ -32,6 +33,14 @@ const BLOCK_TYPES = [
         BlockClass: BombGnome,
         defaultWidth: 60,
         defaultHeight: 40
+    },
+    {
+        id: "speedramp",
+        label: "Speed Ramp",
+        description: "speedramp",
+        BlockClass: SpeedRamp,
+        defaultWidth: 120,
+        defaultHeight: 20
     }
 ];
 
@@ -359,7 +368,7 @@ const css = {
     // blocks panel  
     leftPanel: {
         width: "120px",
-        height: "595px",
+        height: "740px",
         flexShrink: 0,
         // transparent bg
         background: "#11111166",
