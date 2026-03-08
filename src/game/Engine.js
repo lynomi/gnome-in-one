@@ -2,6 +2,7 @@ import Matter from "matter-js";
 import { Ball } from "./Ball";
 import { Course } from "./Course";
 import golfSwingSrc from '/src/assets/golfswing.mp3';
+import bouncedOnceSrc from '/src/assets/bouncedOnce.mp3';
 
 
 
@@ -58,6 +59,8 @@ export class Engine {
         // Add ball at starting position
         const { startPos, velocity } = levelConfig;
         this.addBall(startPos.x, startPos.y, 8, velocity.x, velocity.y);
+
+        this.setupCollisionSounds(); // sound for ball
 
         this.render();
 
@@ -271,5 +274,30 @@ export class Engine {
         ctx.globalAlpha = 0.5;
         block.render(ctx);
         ctx.restore();
+    }
+
+        setupCollisionSounds() {
+        Matter.Events.on(this.engine, "collisionStart", (event) => {
+            const pairs = event.pairs;
+            for (let pair of pairs) {
+                const { bodyA, bodyB } = pair;
+                const isBallInvolved =
+                    bodyA.label === "ball" || bodyB.label === "ball";
+
+                if (isBallInvolved) {
+                    const ballBody = bodyA.label === "ball" ? bodyA : bodyB;
+                    const vel = ballBody.speed;
+
+                    // Map speed to volume (min 0.05, max 1.0)
+                    const volume = Math.min(1.0, Math.max(0.05, vel / 20));
+
+                    const bounce = new Audio(bouncedOnceSrc);
+                    bounce.volume = volume;
+                    bounce.currentTime = 0;
+                    bounce.play();
+                    break;
+                }
+            }
+        });
     }
 }
