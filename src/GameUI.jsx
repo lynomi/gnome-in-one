@@ -42,6 +42,9 @@ export default function GameUI() {
 
     const [selected, setSelected] = useState(null);
     const [previewPosition, setPreviewPosition] = useState(null);
+    // max # of blocks allowed
+    const [placedBlocks, setPlacedBlocks] = useState(0);
+    const MAX_BLOCKS = 3;
     const canvasRef = useRef(null);
     const engineRef = useRef(null);
     const blockPreviewRefs = useRef({});
@@ -166,6 +169,7 @@ export default function GameUI() {
             engineRef.current.resetBall();
             setPhase("BUILD");
             setResultMessage("");
+            setPlacedBlocks(0);
         }
     };
 
@@ -183,12 +187,13 @@ export default function GameUI() {
             setPhase("BUILD");
             setResultMessage("");
             setSelected(null);
+            setPlacedBlocks(0);
         }
     };
 
     // click to select block type
     const handleSelectBlockType = (blockType) => {
-        if (phase !== "BUILD") return;
+        if (phase !== "BUILD" || placedBlocks >= MAX_BLOCKS) return;
         setSelected(selected === blockType.id ? null : blockType.id);
     };
 
@@ -216,6 +221,7 @@ export default function GameUI() {
         // disallows clicking if placement isnt valid
         if (!engineRef.current.isValidPlacement(blockType.BlockClass, x, y)) return;
         engineRef.current.addBlock(blockType.BlockClass, x, y);
+        setPlacedBlocks(prev => prev + 1);
         setSelected(null);
         setPreviewPosition(null);
     };
@@ -237,6 +243,7 @@ export default function GameUI() {
         setPhase("BUILD");
         setResultMessage("");
         setSelected(null);
+        setPlacedBlocks(0);
     };
 
     return (
@@ -245,6 +252,9 @@ export default function GameUI() {
             {/* block panel */}
             <div style={{ ...css.leftPanel, opacity: phase === "BUILD" ? 1 : 0.5 }}>
                 <h3 style={css.leftPanelTitle}>Blocks</h3>
+                <p style={{ textAlign: "center", margin: "0 0 12px 0", fontSize: "13px", color: placedBlocks >= MAX_BLOCKS ? "#ff6666" : "#aaa" }}>
+                    {MAX_BLOCKS - placedBlocks}/{MAX_BLOCKS}
+                </p>
                 <div style={css.blockGrid}>
                     {BLOCK_TYPES.map(blockType => (
                         <div
@@ -253,7 +263,8 @@ export default function GameUI() {
                             style={{
                                 ...css.blockPreview,
                                 background: selected === blockType.id ? "#555" : "#222",
-                                cursor: phase === "BUILD" ? "pointer" : "default"
+                                cursor: phase === "BUILD" && placedBlocks < MAX_BLOCKS ? "pointer" : "default",
+                                opacity: phase === "BUILD" && placedBlocks >= MAX_BLOCKS ? 0.4 : 1
                             }}
                         >
                             <canvas
@@ -413,9 +424,8 @@ const css = {
         fontWeight: "bold",
         fontFamily: "wendy-one",
         background: "#11111166",
+        border: "none",
         color: "#fff",
-        border: "1px solid #444",
-        borderRadius: "6px",
         padding: "8px 12px",
         cursor: "pointer",
     },
