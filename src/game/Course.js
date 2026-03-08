@@ -118,9 +118,6 @@ export class Course {
                     const dy = ballBody.position.y - bombBody.position.y;
                     const len = Math.sqrt(dx * dx + dy * dy) || 1;
                     Matter.Body.setVelocity(ballBody, { x: (dx / len) * 18, y: (dy / len) * 18 });
-
-                    Matter.World.remove(this.engine.world, bombBody);
-                    this.blocks = this.blocks.filter(b => b.body.id !== bombBody.id);
                 }
             }
         });

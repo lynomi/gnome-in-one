@@ -1,3 +1,4 @@
+import Matter from "matter-js";
 import { Block } from "./Block";
 import bombGnomeSrc from '/src/assets/bombGnome.png';
 
@@ -15,6 +16,15 @@ function getDims() {
     return { w: 60, h: DISPLAY_HEIGHT };
 }
 
+function makeOvalVertices(rx, ry, segments = 16) {
+    const verts = [];
+    for (let i = 0; i < segments; i++) {
+        const angle = (2 * Math.PI * i) / segments;
+        verts.push({ x: rx * Math.cos(angle), y: ry * Math.sin(angle) });
+    }
+    return verts;
+}
+
 export class BombGnome extends Block {
     constructor(x, y, options = {}) {
         const { w, h } = getDims();
@@ -24,6 +34,15 @@ export class BombGnome extends Block {
             restitution: 0,
             ...options
         });
+
+        const { isStatic = true, angle = 0, restitution = 0, ...rest } = options;
+        this.body = Matter.Bodies.fromVertices(
+            x, y,
+            makeOvalVertices(w / 2, h / 2),
+            { isStatic, angle, label: "bombgnome", friction: 0.001, restitution, ...rest }
+        );
+        // fromVertices shifts the centroid — re-center it
+        Matter.Body.setPosition(this.body, { x, y });
     }
 
     render(ctx) {
