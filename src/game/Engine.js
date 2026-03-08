@@ -4,6 +4,7 @@ import { Course } from "./Course";
 import golfSwingSrc from '/src/assets/golfswing.mp3';
 import bouncedOnceSrc from '/src/assets/bouncedOnce.mp3';
 import bricksBuildSrc from '/src/assets/bricksBuild.mp3';
+import clearingBricksSrc from '/src/assets/clearingBricks.mp3';
 
 export class Engine {
     constructor(canvas, width = 1000, height = 500, onWin, onLoss) {
@@ -248,6 +249,9 @@ export class Engine {
     clearBlocks() {
         if (this.course) {
             this.course.clearBlocks();
+            const sound = new Audio(clearingBricksSrc);
+            sound.volume = 0.5;
+            sound.play();
         }
         this.render();
     }
