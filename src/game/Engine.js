@@ -298,7 +298,7 @@ export class Engine {
 
                     const bounce = new Audio(bouncedOnceSrc);
                     bounce.volume = volume;
-                    bounce.currentTime = 0.1;
+                    bounce.currentTime = 0.3;
                     bounce.play();
                     break;
                 }

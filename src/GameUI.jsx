@@ -368,7 +368,7 @@ const css = {
     // blocks panel  
     leftPanel: {
         width: "120px",
-        height: "740px",
+        height: "572px",
         flexShrink: 0,
         // transparent bg
         background: "#11111166",

@@ -39,7 +39,7 @@ export class SpeedRamp extends Block {
         ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
 
         // arrow indicators showing boost direction
-        ctx.fillStyle = "rgba(255,255,255,0.6)";
+        ctx.fillStyle = "#ffffff";
         const arrowCount = 3;
         const spacing = this.width / (arrowCount + 1);
         for (let i = 1; i <= arrowCount; i++) {
