@@ -70,6 +70,7 @@ export class Course {
         this.ballStopped = false;
         this.isRunning = false;
         Matter.Body.setStatic(this.ball.body, false);
+
     }
 
     startSimulation() {
@@ -119,8 +120,30 @@ export class Course {
                     const len = Math.sqrt(dx * dx + dy * dy) || 1;
                     Matter.Body.setVelocity(ballBody, { x: (dx / len) * 18, y: (dy / len) * 18 });
                 }
+                // Speed Ramp - boosts ball in the ramp's facing direction
+                if (labels.includes("ball") && labels.includes("speedRamp")) {
+                    const rampBody = pair.bodyA.label === "speedRamp" ? pair.bodyA : pair.bodyB;
+                    const ballBody = this.ball.body;
+
+                    // Get the ramp's facing direction from its angle
+                    const rampAngle = rampBody.angle;
+                    const boostStrength = 25; // tweak this for more/less speed
+
+                    // Project current velocity onto ramp direction, then boost along it
+                    const boostX = Math.cos(rampAngle) * boostStrength;
+                    const boostY = Math.sin(rampAngle) * boostStrength;
+
+                    // Preserve vertical momentum, override horizontal with boost
+                    const currentVel = ballBody.velocity;
+                    Matter.Body.setVelocity(ballBody, {
+                        x: boostX,
+                        y: boostY + currentVel.y * 0.3 // blend gravity with boost
+                    });
+                }
+
             }
         });
+
     }
 
     render() {
