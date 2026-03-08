@@ -127,7 +127,7 @@ export class Course {
 
                     // Get the ramp's facing direction from its angle
                     const rampAngle = rampBody.angle;
-                    const boostStrength = 25; // tweak this for more/less speed
+                    const boostStrength = 18; // tweak this for more/less speed
 
                     // Project current velocity onto ramp direction, then boost along it
                     const boostX = Math.cos(rampAngle) * boostStrength;
