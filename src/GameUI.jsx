@@ -56,7 +56,7 @@ export default function GameUI() {
         // Load initial level
         engine.loadLevel(LEVELS[0]);
 
-        // re-render once async images finish loading (also handles cached images)
+        // re-render to load images
         const rerender = () => engine.render();
         bombImage.addEventListener('load', rerender);
         flagImage.addEventListener('load', rerender);
@@ -212,7 +212,17 @@ export default function GameUI() {
         setPreviewPosition(null);
     };
 
-    const currentLevelData = LEVELS[currentLevel];
+    const handleSelectLevel = (e) => {
+        const idx = Number(e.target.value);
+        if (engineRef.current) {
+            engineRef.current.stop();
+            engineRef.current.loadLevel(LEVELS[idx]);
+        }
+        setCurrentLevel(idx);
+        setPhase("BUILD");
+        setResultMessage("");
+        setSelected(null);
+    };
 
     return (
         <div style={css.root}>
@@ -246,7 +256,11 @@ export default function GameUI() {
             <main style={css.main}>
 
                 <div style={css.header}>
-                    <h2>{currentLevelData ? currentLevelData.title : "Gnome-in-one"}</h2>
+                    <select value={currentLevel} onChange={handleSelectLevel} style={css.levelSelect}>
+                        {LEVELS.map((lvl, idx) => (
+                            <option key={lvl.id} value={idx}>{lvl.title}</option>
+                        ))}
+                    </select>
                     <div style={css.phaseIndicator}>
                         <span style={{ fontWeight: 'bold' }}>PHASE:</span> <span style={{ fontWeight: 'bold', color: phase === "RESULT" ? "#ffaa00" : "#00ffaa" }}>{phase}</span>
                     </div>
@@ -376,6 +390,18 @@ const css = {
         background: "#11111166",
         borderRadius: "8px",
         border: "1px solid #333",
+    },
+
+    levelSelect: {
+        fontSize: "20px",
+        fontWeight: "bold",
+        fontFamily: "wendy-one",
+        background: "#222",
+        color: "#fff",
+        border: "1px solid #444",
+        borderRadius: "6px",
+        padding: "8px 12px",
+        cursor: "pointer",
     },
 
     phaseIndicator: {
