@@ -1,7 +1,7 @@
 import Matter from "matter-js";
 
 export class Block {
-    constructor(x, y, width, height, options = {}) {
+    constructor(x, y, width = 120, height = 18, options = {}) {
         const {
             angle = 0,
             isStatic = true,

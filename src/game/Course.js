@@ -109,7 +109,7 @@ export class Course {
                     break;
                 }
 
-                // bombgnome — launch ball away from block center, then remove
+                // Bomb Gnome - shoots ball away
                 if (labels.includes("ball") && labels.includes("bombgnome")) {
                     const bombBody = pair.bodyA.label === "bombgnome" ? pair.bodyA : pair.bodyB;
                     const ballBody = this.ball.body;

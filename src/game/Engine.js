@@ -157,6 +157,7 @@ export class Engine {
             this.course.startSimulation();
         }
 
+        // consistent frame time simulation
         const FRAME_MS = 1000 / 60;
         let lastTime = 0;
 

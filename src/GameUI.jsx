@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Engine } from "./game/Engine";
 import { Ramp } from "./game/Ramp";
+import { Block } from "./game/Block";
 import { BombGnome, bombImage } from "./game/BombGnome";
 import { flag as flagImage } from "./game/Hole";
 import { LEVELS } from "./game/Levels";
@@ -13,6 +14,16 @@ const BLOCK_TYPES = [
         BlockClass: Ramp,
         defaultWidth: 130,
         defaultHeight: 80
+    },
+    {
+        id: "plank",
+        label: "Plank",
+        description: "plank",
+        BlockClass: Block,
+        defaultWidth: 120,
+        defaultHeight: 18,
+        previewWidth: 70,
+        previewHeight: 14
     },
     {
         id: "bombgnome",
@@ -107,11 +118,13 @@ export default function GameUI() {
             ctx.fillStyle = "#222";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            const pw = blockType.previewWidth ?? blockType.defaultWidth * 0.5;
+            const ph = blockType.previewHeight ?? blockType.defaultHeight * 0.5;
             const block = new blockType.BlockClass(
                 canvas.width / 2,
                 canvas.height / 2,
-                blockType.defaultWidth * 0.5,
-                blockType.defaultHeight * 0.5
+                pw,
+                ph
             );
             block.render(ctx);
         });
@@ -212,6 +225,7 @@ export default function GameUI() {
         setPreviewPosition(null);
     };
 
+    // drop down menu for level select
     const handleSelectLevel = (e) => {
         const idx = Number(e.target.value);
         if (engineRef.current) {
@@ -219,6 +233,7 @@ export default function GameUI() {
             engineRef.current.loadLevel(LEVELS[idx]);
         }
         setCurrentLevel(idx);
+        // sets phase to build if simulation running
         setPhase("BUILD");
         setResultMessage("");
         setSelected(null);
@@ -392,11 +407,12 @@ const css = {
         border: "1px solid #333",
     },
 
+    // drop down menu for level select
     levelSelect: {
         fontSize: "20px",
         fontWeight: "bold",
         fontFamily: "wendy-one",
-        background: "#222",
+        background: "#11111166",
         color: "#fff",
         border: "1px solid #444",
         borderRadius: "6px",
