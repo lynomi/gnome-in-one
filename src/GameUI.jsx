@@ -52,6 +52,19 @@ export default function GameUI() {
     const [selected, setSelected] = useState(null);
     const [rotation, setRotation] = useState(0); // rotation in radians
     const [previewPosition, setPreviewPosition] = useState(null);
+
+    // swing parameters
+    const getInitialSwingState = (idx) => {
+        const vel = LEVELS[idx].velocity;
+        const angleDeg = Math.round(Math.atan2(vel.y, vel.x) * (180 / Math.PI));
+        const power = Math.round(Math.sqrt(vel.x * vel.x + vel.y * vel.y));
+        return { angleDeg, power };
+    };
+
+    const initialState = getInitialSwingState(0);
+    const [swingAngle, setSwingAngle] = useState(initialState.angleDeg);
+    const [swingPower, setSwingPower] = useState(initialState.power);
+
     // max # of blocks allowed
     const [placedBlocks, setPlacedBlocks] = useState(0);
     const MAX_BLOCKS = 3;
@@ -78,7 +91,8 @@ export default function GameUI() {
         engineRef.current = engine;
 
         // Load initial level
-        engine.loadLevel(LEVELS[0]);
+        const initialLevel = LEVELS[0];
+        engine.loadLevel(initialLevel);
 
         // re-render to load images
         const rerender = () => engine.render();
@@ -202,9 +216,18 @@ export default function GameUI() {
             const nextLevel = currentLevel + 1;
             setCurrentLevel(nextLevel);
 
+            const nextLvl = LEVELS[nextLevel];
             if (engineRef.current) {
-                engineRef.current.loadLevel(LEVELS[nextLevel]);
+                engineRef.current.loadLevel(nextLvl);
             }
+
+            const vx = nextLvl.velocity.x;
+            const vy = nextLvl.velocity.y;
+            const angleDeg = Math.round(Math.atan2(vy, vx) * (180 / Math.PI));
+            const power = Math.round(Math.sqrt(vx * vx + vy * vy));
+            setSwingAngle(angleDeg);
+            setSwingPower(power);
+
             setPhase("BUILD");
             setResultMessage("");
             setSelected(null);
@@ -261,16 +284,46 @@ export default function GameUI() {
     // drop down menu for level select
     const handleSelectLevel = (e) => {
         const idx = Number(e.target.value);
+        const lvl = LEVELS[idx];
         if (engineRef.current) {
             engineRef.current.stop();
-            engineRef.current.loadLevel(LEVELS[idx]);
+            engineRef.current.loadLevel(lvl);
         }
+
+        const vx = lvl.velocity.x;
+        const vy = lvl.velocity.y;
+        const angleDeg = Math.round(Math.atan2(vy, vx) * (180 / Math.PI));
+        const power = Math.round(Math.sqrt(vx * vx + vy * vy));
+        setSwingAngle(angleDeg);
+        setSwingPower(power);
+
         setCurrentLevel(idx);
         // sets phase to build if simulation running
         setPhase("BUILD");
         setResultMessage("");
         setSelected(null);
         setPlacedBlocks(0);
+    };
+
+    // swing adjustment handlers
+    const handleAngleChange = (e) => {
+        const newAngle = Number(e.target.value);
+        setSwingAngle(newAngle);
+        updateEngineVelocity(newAngle, swingPower);
+    };
+
+    const handlePowerChange = (e) => {
+        const newPower = Number(e.target.value);
+        setSwingPower(newPower);
+        updateEngineVelocity(swingAngle, newPower);
+    };
+
+    const updateEngineVelocity = (angleDeg, power) => {
+        if (!engineRef.current) return;
+        const angleRad = angleDeg * (Math.PI / 180);
+        const vx = Math.cos(angleRad) * power;
+        const vy = Math.sin(angleRad) * power;
+        engineRef.current.setSwingVelocity(vx, vy);
     };
 
     return (
@@ -349,19 +402,48 @@ export default function GameUI() {
 
                 <div style={css.controls}>
                     {phase === "BUILD" && (
-                        <>
+                        <div style={css.swingAdjustControls}>
+                            <div style={css.sliderGroup}>
+                                <label style={css.sliderLabel}>Angle: {swingAngle}°</label>
+                                <input
+                                    type="range"
+                                    min="-180"
+                                    max="180"
+                                    value={swingAngle}
+                                    onChange={handleAngleChange}
+                                    style={css.slider}
+                                />
+                            </div>
+                            <div style={css.sliderGroup}>
+                                <label style={css.sliderLabel}>Power: {swingPower}</label>
+                                <input
+                                    type="range"
+                                    min="1"
+                                    max="30"
+                                    value={swingPower}
+                                    onChange={handlePowerChange}
+                                    style={css.slider}
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {phase === "BUILD" && (
+                        <div style={css.buttonRow}>
                             <button style={{ ...css.runButton, background: "#1a5a2a" }} onClick={handleRun}>
                                 Swing
                             </button>
                             <button style={css.runButton} onClick={handleClear}>
                                 Clear Blocks
                             </button>
-                        </>
+                        </div>
                     )}
                     {(phase === "SWING" || phase === "RESULT") && (
-                        <button style={css.runButton} onClick={handleReset}>
-                            Reset to Build Phase
-                        </button>
+                        <div style={css.buttonRow}>
+                            <button style={css.runButton} onClick={handleReset}>
+                                Reset to Build Phase
+                            </button>
+                        </div>
                     )}
                 </div>
                 {phase === "BUILD" && selected && (
@@ -520,11 +602,49 @@ const css = {
 
     controls: {
         display: "flex",
-        gap: "12px"
+        flexDirection: "column",
+        gap: "12px",
+        background: "#11111166",
+        padding: "16px",
+        borderRadius: "8px",
+        border: "1px solid #333"
+    },
+
+    swingAdjustControls: {
+        display: "flex",
+        gap: "24px",
+        alignItems: "center",
+        justifyContent: "space-between",
+        borderBottom: "1px solid #333",
+        paddingBottom: "16px"
+    },
+
+    sliderGroup: {
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+        gap: "8px"
+    },
+
+    sliderLabel: {
+        fontSize: "16px",
+        fontWeight: "bold"
+    },
+
+    slider: {
+        width: "100%",
+        cursor: "pointer",
+        accentColor: "#00ffaa"
+    },
+
+    buttonRow: {
+        display: "flex",
+        gap: "12px",
+        justifyContent: "flex-end"
     },
 
     runButton: {
-        padding: "16px 32px",
+        padding: "12px 24px",
         fontSize: "18px",
         fontWeight: "bold",
         background: "#222",
@@ -542,4 +662,3 @@ const css = {
         padding: "12px"
     }
 }
-

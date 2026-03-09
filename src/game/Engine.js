@@ -41,6 +41,7 @@ export class Engine {
         // course (obstacles + hole)
         this.course = null;
         this.currentLevelConfig = null;
+        this.currentVelocity = { x: 0, y: 0 };
     }
 
     loadLevel(levelConfig) {
@@ -58,7 +59,8 @@ export class Engine {
 
         // Add ball at starting position
         const { startPos, velocity } = levelConfig;
-        this.addBall(startPos.x, startPos.y, 8, velocity.x, velocity.y);
+        this.currentVelocity = { ...velocity };
+        this.addBall(startPos.x, startPos.y, 8, this.currentVelocity.x, this.currentVelocity.y);
 
         this.setupCollisionSounds(); // sound for ball
 
@@ -121,14 +123,17 @@ export class Engine {
     // shows trajectory of ball path
     renderTrajectory(ctx) {
         if (!this.ball || !this.currentLevelConfig) return;
-        const { startPos, velocity } = this.currentLevelConfig;
+        const { startPos } = this.currentLevelConfig;
+        const velocity = this.currentVelocity;
         const delta = 1000 / 60;
-        const g = this.engine.world.gravity.y * 0.001 * delta * delta; // matches Matter.js Verlet: gravity * scale * delta²
+        const g = this.engine.world.gravity.y * 0.001 * delta * delta; // matches Matter.js Verlet: gravity * scale * deltaÂ²
         let x = startPos.x, y = startPos.y;
         let vx = velocity.x, vy = velocity.y;
 
         ctx.save();
-        for (let i = 0; i < 40; i++) {
+        // Limit trajectory to a short preview (e.g., 12 steps) to prevent trivializing puzzles
+        const maxSteps = 12;
+        for (let i = 0; i < maxSteps; i++) {
             vx *= (1 - 0.005); // air friction
             vy *= (1 - 0.005);
             vy += g;
@@ -137,7 +142,8 @@ export class Engine {
             if (x < 0 || x > this.width || y < 0 || y > this.height) break;
             ctx.beginPath();
             ctx.arc(x, y, 2, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255,255,255,${0.6 - i * 0.007})`;
+            // Fade out smoothly over the steps
+            ctx.fillStyle = `rgba(255,255,255,${0.6 - i * (0.6 / maxSteps)})`;
             ctx.fill();
         }
         ctx.restore();
@@ -222,13 +228,21 @@ export class Engine {
         if (!this.currentLevelConfig) return;
 
         if (this.ball) {
-            const { startPos, velocity } = this.currentLevelConfig;
+            const { startPos } = this.currentLevelConfig;
             this.ball.reset(startPos.x, startPos.y);
-            this.ball.setVelocity(velocity.x, velocity.y);
+            this.ball.setVelocity(this.currentVelocity.x, this.currentVelocity.y);
             this.showTrajectory = true;
             if (this.course) {
                 this.course.resetBall();
             }
+            this.render();
+        }
+    }
+
+    setSwingVelocity(vx, vy) {
+        this.currentVelocity = { x: vx, y: vy };
+        if (this.ball && this.showTrajectory) {
+            this.ball.setVelocity(vx, vy);
             this.render();
         }
     }
