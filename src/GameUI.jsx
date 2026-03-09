@@ -50,6 +50,7 @@ export default function GameUI() {
     const [resultMessage, setResultMessage] = useState("");
 
     const [selected, setSelected] = useState(null);
+    const [rotation, setRotation] = useState(0); // rotation in radians
     const [previewPosition, setPreviewPosition] = useState(null);
     // max # of blocks allowed
     const [placedBlocks, setPlacedBlocks] = useState(0);
@@ -103,22 +104,33 @@ export default function GameUI() {
         const blockType = BLOCK_TYPES.find(bt => bt.id === selected);
         if (!blockType) return;
 
+        const handleKeyDown = (e) => {
+            if (phase === "BUILD" && selected && (e.key === 'r' || e.key === 'R')) {
+                setRotation(prev => prev + Math.PI / 4); // Rotate 45 degrees
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
         const renderPreview = () => {
             engineRef.current.render();
-            engineRef.current.renderPreview(blockType.BlockClass, previewPosition.x, previewPosition.y);
+            const pw = blockType.previewWidth ?? blockType.defaultWidth;
+            const ph = blockType.previewHeight ?? blockType.defaultHeight;
+            engineRef.current.renderPreview(blockType.BlockClass, previewPosition.x, previewPosition.y, pw, ph, { angle: rotation });
             animationFrameRef.current = requestAnimationFrame(renderPreview);
         };
 
         animationFrameRef.current = requestAnimationFrame(renderPreview);
 
         return () => {
+            window.removeEventListener('keydown', handleKeyDown);
             if (animationFrameRef.current) {
                 cancelAnimationFrame(animationFrameRef.current);
             }
             // ensure clean render after unmounting preview
             if (engineRef.current) engineRef.current.render();
         };
-    }, [selected, previewPosition, phase]);
+    }, [selected, previewPosition, phase, rotation]);
 
     // render block type preview
     const drawBlockPreviews = () => {
@@ -148,7 +160,6 @@ export default function GameUI() {
         return () => bombImage.removeEventListener('load', drawBlockPreviews);
     }, []);
 
-    // run/swing button
     const handleRun = () => {
         if (engineRef.current && phase === "BUILD") {
             engineRef.current.stop();
@@ -156,21 +167,21 @@ export default function GameUI() {
 
             setPhase("SWING");
             setSelected(null); // Deselect any blocks
+            setRotation(0);
             engineRef.current.start();
         }
     };
 
-    // reset to build phase for current level
     const handleReset = () => {
         if (engineRef.current) {
             engineRef.current.stop();
             engineRef.current.resetBall();
             setPhase("BUILD");
             setResultMessage("");
+            setRotation(0);
         }
     };
 
-    // clear blocks and retry
     const handleClear = () => {
         if (engineRef.current) {
             engineRef.current.stop();
@@ -179,6 +190,7 @@ export default function GameUI() {
             setPhase("BUILD");
             setResultMessage("");
             setPlacedBlocks(0);
+            setRotation(0);
         }
     };
 
@@ -200,10 +212,15 @@ export default function GameUI() {
         }
     };
 
-    // click to select block type
     const handleSelectBlockType = (blockType) => {
         if (phase !== "BUILD" || placedBlocks >= MAX_BLOCKS) return;
-        setSelected(selected === blockType.id ? null : blockType.id);
+        if (selected === blockType.id) {
+            setSelected(null);
+            setRotation(0);
+        } else {
+            setSelected(blockType.id);
+            setRotation(0);
+        }
     };
 
     // move mouse for preview
@@ -228,11 +245,12 @@ export default function GameUI() {
         const y = e.clientY - rect.top;
 
         // disallows clicking if placement isnt valid
-        if (!engineRef.current.isValidPlacement(blockType.BlockClass, x, y)) return;
-        engineRef.current.addBlock(blockType.BlockClass, x, y);
+        if (!engineRef.current.isValidPlacement(blockType.BlockClass, x, y, blockType.defaultWidth, blockType.defaultHeight, { angle: rotation })) return;
+        engineRef.current.addBlock(blockType.BlockClass, x, y, blockType.defaultWidth, blockType.defaultHeight, { angle: rotation });
         setPlacedBlocks(prev => prev + 1);
         setSelected(null);
         setPreviewPosition(null);
+        setRotation(0);
     };
 
     // disables preview when leaving canvas
@@ -346,6 +364,11 @@ export default function GameUI() {
                         </button>
                     )}
                 </div>
+                {phase === "BUILD" && selected && (
+                    <div style={css.instructions}>
+                        Tip: Press <kbd style={css.kbd}>R</kbd> to rotate the block.
+                    </div>
+                )}
             </main>
         </div>
     );

@@ -24,7 +24,7 @@ export class Engine {
             .then(r => r.arrayBuffer())
             .then(buf => this.audioContext.decodeAudioData(buf))
             .then(decoded => { this.swingBuffer = decoded; })
-            .catch(() => {});
+            .catch(() => { });
 
         // create engine
         this.engine = Matter.Engine.create();
@@ -234,12 +234,12 @@ export class Engine {
     }
 
     // adds a block to the course
-    addBlock(BlockClass, x, y, options = {}) {
+    addBlock(BlockClass, x, y, width, height, options = {}) {
         if (!this.course) return null;
-            const sound = new Audio(bricksBuildSrc);
-            sound.volume = 0.5;
-            sound.play();
-        const block = new BlockClass(x, y, undefined, undefined, options);
+        const sound = new Audio(bricksBuildSrc);
+        sound.volume = 0.5;
+        sound.play();
+        const block = new BlockClass(x, y, width, height, options);
         this.course.blocks.push(block);
         Matter.World.add(this.engine.world, block.body);
         this.render();
@@ -257,8 +257,8 @@ export class Engine {
     }
 
     // returns true if placing block doesnt overlap existing objects
-    isValidPlacement(BlockClass, x, y) {
-        const tempBlock = new BlockClass(x, y);
+    isValidPlacement(BlockClass, x, y, width, height, options = {}) {
+        const tempBlock = new BlockClass(x, y, width, height, options);
         const bodiesToCheck = [];
 
         if (this.ball) bodiesToCheck.push(this.ball.body);
@@ -269,10 +269,10 @@ export class Engine {
     }
 
     // placing preview
-    renderPreview(BlockClass, x, y) {
-        const block = new BlockClass(x, y);
+    renderPreview(BlockClass, x, y, width, height, options = {}) {
+        const block = new BlockClass(x, y, width, height, options);
         // turns red if invalid
-        if (!this.isValidPlacement(BlockClass, x, y)) block.color = "#ff3333";
+        if (!this.isValidPlacement(BlockClass, x, y, width, height, options)) block.color = "#ff3333";
 
         const ctx = this.ctx;
         ctx.save();
@@ -281,7 +281,7 @@ export class Engine {
         ctx.restore();
     }
 
-        setupCollisionSounds() {
+    setupCollisionSounds() {
         Matter.Events.on(this.engine, "collisionStart", (event) => {
             const pairs = event.pairs;
             for (let pair of pairs) {

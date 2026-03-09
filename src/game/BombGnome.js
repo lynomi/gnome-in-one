@@ -26,7 +26,7 @@ function makeOvalVertices(rx, ry, segments = 16) {
 }
 
 export class BombGnome extends Block {
-    constructor(x, y, options = {}) {
+    constructor(x, y, width, height, options = {}) {
         const { w, h } = getDims();
         super(x, y, w, h, {
             color: "#cc3300",
