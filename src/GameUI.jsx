@@ -128,9 +128,7 @@ export default function GameUI() {
 
         const renderPreview = () => {
             engineRef.current.render();
-            const pw = blockType.previewWidth ?? blockType.defaultWidth;
-            const ph = blockType.previewHeight ?? blockType.defaultHeight;
-            engineRef.current.renderPreview(blockType.BlockClass, previewPosition.x, previewPosition.y, pw, ph, { angle: rotation });
+            engineRef.current.renderPreview(blockType.BlockClass, previewPosition.x, previewPosition.y, blockType.defaultWidth, blockType.defaultHeight, { angle: rotation });
             animationFrameRef.current = requestAnimationFrame(renderPreview);
         };
 
