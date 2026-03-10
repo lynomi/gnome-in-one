@@ -42,6 +42,8 @@ export class Engine {
         this.course = null;
         this.currentLevelConfig = null;
         this.currentVelocity = { x: 0, y: 0 };
+
+        this.setupCollisionSounds(); // sound for ball (registered once)
     }
 
     loadLevel(levelConfig) {
@@ -61,8 +63,6 @@ export class Engine {
         const { startPos, velocity } = levelConfig;
         this.currentVelocity = { ...velocity };
         this.addBall(startPos.x, startPos.y, 8, this.currentVelocity.x, this.currentVelocity.y);
-
-        this.setupCollisionSounds(); // sound for ball
 
         this.render();
 
