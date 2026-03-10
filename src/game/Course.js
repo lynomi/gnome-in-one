@@ -1,6 +1,8 @@
 import Matter from "matter-js";
 import { Block } from "./Block";
 import { Hole } from "./Hole";
+import gnomeSurprise from '/src/assets/gnomeSurprise.mp3';
+import gnomeCrying from '/src/assets/gnomeCrying.mp3';
 
 export class Course {
     constructor(engine, ctx, width, height, map, onWin, onLoss) {
@@ -87,6 +89,10 @@ export class Course {
         // Let gravity and friction settle it. If speed is very low and it's practically stationary
         if (speed < 0.1 && this.ball.body.angularVelocity < 0.05) {
             this.ballStopped = true;
+            // lose sound effect
+            const sound = new Audio(gnomeCrying);
+            sound.volume = 0.8;
+            sound.play();
             this.onLoss();
         }
     }
@@ -106,6 +112,12 @@ export class Course {
                     Matter.Body.setAngularVelocity(this.ball.body, 0);
                     Matter.Body.setPosition(this.ball.body, this.hole.body.position);
                     Matter.Body.setStatic(this.ball.body, true);
+
+                    // victory sound
+                    const sound = new Audio(gnomeSurprise);
+                    sound.volume = 0.8;
+                    sound.play();
+                    
                     this.onWin();
                     break;
                 }

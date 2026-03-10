@@ -435,7 +435,7 @@ export default function GameUI() {
                                 Swing
                             </button>
                             <button style={css.runButton} onClick={handleClear}>
-                                Clear Blocks
+                                Clear
                             </button>
                         </div>
                     )}
