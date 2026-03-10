@@ -327,6 +327,9 @@ export default function GameUI() {
     return (
         <div style={css.root}>
 
+            {/* title */}
+            <div style={css.title}>GNOME IN ONE</div>
+
             {/* block panel */}
             <div style={{ ...css.leftPanel, opacity: phase === "BUILD" ? 1 : 0.5 }}>
                 <h3 style={css.leftPanelTitle}>Blocks</h3>
@@ -468,7 +471,18 @@ const css = {
         boxSizing: "border-box"
     },
 
-    // blocks panel  
+    title: {
+        position: "fixed",
+        top: "16px",
+        left: "16px",
+        fontSize: "22px",
+        fontWeight: "bold",
+        color: "#ffffff",
+        pointerEvents: "none",
+        zIndex: 100
+    },
+
+    // blocks panel
     leftPanel: {
         width: "120px",
         height: "572px",
