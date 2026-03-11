@@ -120,7 +120,7 @@ export const LEVELS = [
     {
         id: 9,
         title: "Level 9 - Bomb Gnome Alley",
-        maxBlocks: 2,
+        maxBlocks: 3,
         startPos: { x: 90, y: 420 },
         velocity: { x: 11, y: -8 },
         hole: { x: 920, y: 90, radius: 12 },
@@ -136,7 +136,7 @@ export const LEVELS = [
     {
         id: 10,
         title: "Level 10 - Brook Boost",
-        maxBlocks: 2,
+        maxBlocks: 3,
         startPos: { x: 120, y: 100 },
         velocity: { x: 10, y: 8 },
         hole: { x: 900, y: 420, radius: 12 },
@@ -155,7 +155,7 @@ export const LEVELS = [
     {
         id: 11,
         title: "Level 11 - Gnome Watch",
-        maxBlocks: 2,
+        maxBlocks: 3,
         startPos: { x: 80, y: 250 },
         velocity: { x: 13, y: 0 },
         hole: { x: 930, y: 250, radius: 12 },
@@ -173,7 +173,7 @@ export const LEVELS = [
     {
         id: 12,
         title: "Level 12 - Totem Stack",
-        maxBlocks: 2,
+        maxBlocks: 3,
         startPos: { x: 500, y: 460 },
         velocity: { x: 0, y: -14 },
         hole: { x: 500, y: 80, radius: 12 },
@@ -192,7 +192,7 @@ export const LEVELS = [
     {
         id: 13,
         title: "Level 13 - Bomb Ring",
-        maxBlocks: 2,
+        maxBlocks: 3,
         startPos: { x: 100, y: 250 },
         velocity: { x: 12, y: -2 },
         hole: { x: 900, y: 250, radius: 12 },
@@ -214,7 +214,7 @@ export const LEVELS = [
     {
         id: 14,
         title: "Level 14 - Gnome Ski Jump",
-        maxBlocks: 2,
+        maxBlocks: 3,
         startPos: { x: 80, y: 430 },
         velocity: { x: 10, y: -6 },
         hole: { x: 920, y: 70, radius: 12 },
@@ -232,7 +232,7 @@ export const LEVELS = [
     {
         id: 15,
         title: "Level 15 - Hedge Maze",
-        maxBlocks: 1,
+        maxBlocks: 3,
         startPos: { x: 120, y: 90 },
         velocity: { x: 9, y: 9 },
         hole: { x: 920, y: 420, radius: 12 },
@@ -251,7 +251,7 @@ export const LEVELS = [
     {
         id: 16,
         title: "Level 16 - Gnome Crossfire",
-        maxBlocks: 1,
+        maxBlocks: 3,
         startPos: { x: 120, y: 360 },
         velocity: { x: 11, y: -7 },
         hole: { x: 900, y: 110, radius: 12 },
@@ -269,7 +269,7 @@ export const LEVELS = [
     {
         id: 17,
         title: "Level 17 - Courtyard Hop",
-        maxBlocks: 1,
+        maxBlocks: 3,
         startPos: { x: 70, y: 450 },
         velocity: { x: 11, y: -7 },
         hole: { x: 940, y: 80, radius: 12 },
@@ -282,7 +282,7 @@ export const LEVELS = [
     {
         id: 18,
         title: "Level 18 - Bomb Lane",
-        maxBlocks: 1,
+        maxBlocks: 3,
         startPos: { x: 80, y: 250 },
         velocity: { x: 13, y: 0 },
         hole: { x: 930, y: 250, radius: 12 },
@@ -302,7 +302,7 @@ export const LEVELS = [
     {
         id: 19,
         title: "Level 19 - Flag Keep",
-        maxBlocks: 1,
+        maxBlocks: 3,
         startPos: { x: 60, y: 80 },
         velocity: { x: 10, y: 10 },
         hole: { x: 930, y: 420, radius: 12 },
@@ -320,7 +320,7 @@ export const LEVELS = [
     {
         id: 20,
         title: "Level 20 - Gnome King's Gauntlet",
-        maxBlocks: 1,
+        maxBlocks: 3,
         startPos: { x: 70, y: 460 },
         velocity: { x: 11, y: -8 },
         hole: { x: 940, y: 110, radius: 12 },
