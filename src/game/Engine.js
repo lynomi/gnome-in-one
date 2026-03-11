@@ -37,6 +37,7 @@ export class Engine {
         this.ball = null;
         this.animationId = null;
         this.showTrajectory = true;
+        this.collisionSoundHandler = null;
 
         // course (obstacles + hole)
         this.course = null;
@@ -296,7 +297,11 @@ export class Engine {
     }
 
     setupCollisionSounds() {
-        Matter.Events.on(this.engine, "collisionStart", (event) => {
+        if (this.collisionSoundHandler) {
+            Matter.Events.off(this.engine, "collisionStart", this.collisionSoundHandler);
+        }
+
+        this.collisionSoundHandler = (event) => {
             const pairs = event.pairs;
             for (let pair of pairs) {
                 const { bodyA, bodyB } = pair;
@@ -317,6 +322,8 @@ export class Engine {
                     break;
                 }
             }
-        });
+        };
+
+        Matter.Events.on(this.engine, "collisionStart", this.collisionSoundHandler);
     }
 }

@@ -82,11 +82,11 @@ export class Course {
     update() {
         if (!this.isRunning || !this.ball || this.ballInHole || this.ballStopped) return;
 
-        // Check if ball stopped moving
+        // check if ball stopped moving
         const velocity = this.ball.body.velocity;
         const speed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
 
-        // Let gravity and friction settle it. If speed is very low and it's practically stationary
+        // if speed is very low triggers fail
         if (speed < 0.1 && this.ball.body.angularVelocity < 0.05) {
             this.ballStopped = true;
             // lose sound effect
@@ -106,6 +106,7 @@ export class Course {
 
                 // hole
                 if (!this.ballInHole && this.hole && labels.includes("ball") && labels.includes("hole")) {
+                    
                     this.ballInHole = true;
                     this.isRunning = false;
                     Matter.Body.setVelocity(this.ball.body, { x: 0, y: 0 });
@@ -145,7 +146,7 @@ export class Course {
                     const boostX = Math.cos(rampAngle) * boostStrength;
                     const boostY = Math.sin(rampAngle) * boostStrength;
 
-                    // Preserve vertical momentum, override horizontal with boost
+                    // keep vertical momentum, override horizontal with boost
                     const currentVel = ballBody.velocity;
                     Matter.Body.setVelocity(ballBody, {
                         x: boostX,
