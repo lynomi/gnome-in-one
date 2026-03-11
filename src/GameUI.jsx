@@ -4,7 +4,7 @@ import { Ramp } from "./game/Ramp";
 import { Block } from "./game/Block";
 import { BombGnome, bombImage } from "./game/BombGnome";
 import { flag as flagImage } from "./game/Hole";
-import { LEVELS } from "./game/Levels";
+import { LEVELS } from "./game/levels";
 import { SpeedRamp } from "./game/SpeedRamp";
 
 const BLOCK_TYPES = [
@@ -53,7 +53,6 @@ export default function GameUI() {
     const [rotation, setRotation] = useState(0); // rotation in radians
     const [previewPosition, setPreviewPosition] = useState(null);
 
-    // swing parameters
     const getInitialSwingState = (idx) => {
         const vel = LEVELS[idx].velocity;
         const angleDeg = Math.round(Math.atan2(vel.y, vel.x) * (180 / Math.PI));
@@ -67,7 +66,7 @@ export default function GameUI() {
 
     // max # of blocks allowed
     const [placedBlocks, setPlacedBlocks] = useState(0);
-    const MAX_BLOCKS = 3;
+    const currentMaxBlocks = LEVELS[currentLevel]?.maxBlocks ?? 3;
     const canvasRef = useRef(null);
     const engineRef = useRef(null);
     const blockPreviewRefs = useRef({});
@@ -234,7 +233,7 @@ export default function GameUI() {
     };
 
     const handleSelectBlockType = (blockType) => {
-        if (phase !== "BUILD" || placedBlocks >= MAX_BLOCKS) return;
+        if (phase !== "BUILD" || placedBlocks >= currentMaxBlocks) return;
         if (selected === blockType.id) {
             setSelected(null);
             setRotation(0);
@@ -256,7 +255,7 @@ export default function GameUI() {
 
     // canvas click to place block
     const handleCanvasClick = (e) => {
-        if (!selected || !engineRef.current || !canvasRef.current || phase !== "BUILD") return;
+        if (!selected || !engineRef.current || !canvasRef.current || phase !== "BUILD" || placedBlocks >= currentMaxBlocks) return;
 
         const blockType = BLOCK_TYPES.find(bt => bt.id === selected);
         if (!blockType) return;
@@ -333,8 +332,8 @@ export default function GameUI() {
             {/* block panel */}
             <div style={{ ...css.leftPanel, opacity: phase === "BUILD" ? 1 : 0.5 }}>
                 <h3 style={css.leftPanelTitle}>Blocks</h3>
-                <p style={{ textAlign: "center", margin: "0 0 12px 0", fontSize: "13px", color: placedBlocks >= MAX_BLOCKS ? "#ff6666" : "#aaa" }}>
-                    {MAX_BLOCKS - placedBlocks}/{MAX_BLOCKS}
+                <p style={{ textAlign: "center", margin: "0 0 12px 0", fontSize: "13px", color: placedBlocks >= currentMaxBlocks ? "#ff6666" : "#aaa" }}>
+                    {Math.max(currentMaxBlocks - placedBlocks, 0)}/{currentMaxBlocks}
                 </p>
                 <div style={css.blockGrid}>
                     {BLOCK_TYPES.map(blockType => (
@@ -344,8 +343,8 @@ export default function GameUI() {
                             style={{
                                 ...css.blockPreview,
                                 background: selected === blockType.id ? "#555" : "#222",
-                                cursor: phase === "BUILD" && placedBlocks < MAX_BLOCKS ? "pointer" : "default",
-                                opacity: phase === "BUILD" && placedBlocks >= MAX_BLOCKS ? 0.4 : 1
+                                cursor: phase === "BUILD" && placedBlocks < currentMaxBlocks ? "pointer" : "default",
+                                opacity: phase === "BUILD" && placedBlocks >= currentMaxBlocks ? 0.4 : 1
                             }}
                         >
                             <canvas
