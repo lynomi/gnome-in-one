@@ -12,7 +12,7 @@ export class Engine {
         this.ctx = canvas.getContext("2d");
         this.width = width;
         this.height = height;
-        this.wallThickness = 20;
+        this.wallThickness = 50;
 
         this.onWin = onWin || (() => { });
         this.onLoss = onLoss || (() => { });
@@ -27,7 +27,11 @@ export class Engine {
             .catch(() => { });
 
         // create engine
-        this.engine = Matter.Engine.create();
+        this.engine = Matter.Engine.create({
+            positionIterations: 10,
+            velocityIterations: 8,
+            constraintIterations: 4,
+        });
         this.engine.world.gravity.y = 1.2;
 
         // create walls
@@ -171,13 +175,17 @@ export class Engine {
 
         // consistent frame time simulation
         const FRAME_MS = 1000 / 60;
+        const SUB_STEPS = 3;
+        const STEP_MS = FRAME_MS / SUB_STEPS;
         let lastTime = 0;
 
         const animate = (timestamp) => {
             this.animationId = requestAnimationFrame(animate);
             if (timestamp - lastTime < FRAME_MS) return;
             lastTime = timestamp;
-            Matter.Engine.update(this.engine, FRAME_MS);
+            for (let i = 0; i < SUB_STEPS; i++) {
+                Matter.Engine.update(this.engine, STEP_MS);
+            }
             if (this.course) {
                 this.course.update();
             }

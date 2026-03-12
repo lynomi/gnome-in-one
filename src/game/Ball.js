@@ -10,6 +10,7 @@ export class Ball {
             restitution: 0.85, // bounce setting
             density: 0.04,
             label: "ball",
+            slop: 0,
             ...options
         });
     }
