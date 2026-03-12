@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import gitIconSrc from '/src/assets/gitIcon.png';
+import bgMusicSrc from '/src/assets/backgroundMusic.mp3';
 import { Engine } from "./game/Engine";
 import { Ramp } from "./game/Ramp";
 import { Block } from "./game/Block";
@@ -68,10 +69,35 @@ export default function GameUI() {
     // max # of blocks allowed
     const [placedBlocks, setPlacedBlocks] = useState(0);
     const currentMaxBlocks = LEVELS[currentLevel]?.maxBlocks ?? 3;
+    const [musicPlaying, setMusicPlaying] = useState(false);
+    const musicRef = useRef(null);
     const canvasRef = useRef(null);
     const engineRef = useRef(null);
     const blockPreviewRefs = useRef({});
     const animationFrameRef = useRef(null);
+
+    // background music setup
+    useEffect(() => {
+        const music = new Audio(bgMusicSrc);
+        music.loop = true;
+        music.volume = 0.3;
+        musicRef.current = music;
+        return () => {
+            music.pause();
+            music.src = '';
+        };
+    }, []);
+
+    const handleMusicToggle = () => {
+        const music = musicRef.current;
+        if (!music) return;
+        if (musicPlaying) {
+            music.pause();
+        } else {
+            music.play().catch(() => {});
+        }
+        setMusicPlaying(prev => !prev);
+    };
 
     // engine initialization
     useEffect(() => {
@@ -327,8 +353,13 @@ export default function GameUI() {
     return (
         <div style={css.root}>
 
-            {/* title */}
-            <div style={css.title}>GNOME IN ONE</div>
+            {/* title + music toggle */}
+            <div style={css.title}>
+                GNOME IN ONE
+                <button onClick={handleMusicToggle} style={css.musicButton} title={musicPlaying ? "Pause music" : "Play music"}>
+                    {musicPlaying ? "⏸" : "▶"}
+                </button>
+            </div>
 
             {/* github link */}
             <a href="https://github.com/lynomi/gnome-in-one" target="_blank" rel="noopener noreferrer" style={css.githubLink}>
@@ -494,7 +525,21 @@ const css = {
         fontWeight: "bold",
         color: "#ffffff",
         pointerEvents: "none",
-        zIndex: 100
+        zIndex: 100,
+        display: "flex",
+        alignItems: "center",
+        gap: "10px",
+    },
+
+    musicButton: {
+        pointerEvents: "auto",
+        background: "none",
+        border: "none",
+        color: "#ffffff",
+        fontSize: "16px",
+        cursor: "pointer",
+        padding: "0",
+        lineHeight: 1,
     },
 
     // blocks panel

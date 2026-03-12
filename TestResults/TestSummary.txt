@@ -38,3 +38,6 @@ Scope: Full gameplay across all 20 levels across 4 web browsers - Firefox, Googl
 - Working win/loss conditions
 - correct special obstacle interactions (Bomb Gnome, Speed Ramp),
 - All audio elements are working
+
+Notes:
+Website works well on every browser, font differs
