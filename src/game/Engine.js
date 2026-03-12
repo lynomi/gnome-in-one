@@ -2,7 +2,7 @@ import Matter from "matter-js";
 import { Ball } from "./Ball";
 import { Course } from "./Course";
 import golfSwingSrc from '/src/assets/golfswing.mp3';
-import bouncedOnceSrc from '/src/assets/bouncedOnce.mp3';
+import bounceSrc from '/src/assets/bounce.mp3';
 import bricksBuildSrc from '/src/assets/bricksBuild.mp3';
 import clearingBricksSrc from '/src/assets/clearingBricks.mp3';
 
@@ -323,7 +323,7 @@ export class Engine {
                     // Map speed to volume (min 0.05, max 1.0)
                     const volume = Math.min(1.0, Math.max(0.05, vel / 20));
 
-                    const bounce = new Audio(bouncedOnceSrc);
+                    const bounce = new Audio(bounceSrc);
                     bounce.volume = volume;
                     bounce.currentTime = 0.3;
                     bounce.play();
