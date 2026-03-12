@@ -1,0 +1,3 @@
+Known Issues Summary
+
+- Ball clipping through thin blocks and play border at high speed (fixed for now)

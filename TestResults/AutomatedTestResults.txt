@@ -1,0 +1,21 @@
+PS C:\Projects\gnome-in-one> npm run test:run
+
+> gnome-in-one@0.0.0 test:run
+> vitest run
+
+
+ RUN  v4.1.0 C:/Projects/gnome-in-one
+
+ ✓ src/test/levels.test.js (2 tests) 5ms
+ ✓ src/test/SpeedRamp.test.js (1 test) 3ms
+ ✓ src/test/Block.test.js (2 tests) 3ms
+ ✓ src/test/Ramp.test.js (1 test) 3ms
+ ✓ src/test/Ball.test.js (2 tests) 4ms
+ ✓ src/test/Hole.test.js (1 test) 3ms
+ ✓ src/test/Course.test.js (2 tests) 4ms
+ ✓ src/test/Engine.test.js (4 tests) 8ms
+
+ Test Files  8 passed (8)
+      Tests  15 passed (15)
+   Start at  13:57:46
+   Duration  817ms (transform 284ms, setup 81ms, import 426ms, tests 33ms, environment 4.71s)

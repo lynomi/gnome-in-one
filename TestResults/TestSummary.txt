@@ -1,0 +1,40 @@
+Automated Test Summary
+
+Most recent test: 2026-03-12
+
+   Tool: Vitest 4.1.0 with jsdom
+   Scope: Individual game classes: Ball, Block, Hole, Ramp, SpeedRamp, Course, Engine, and levels.js.
+
+     levels.test.js    (2 tests)  - 20 levels present, sequential IDs,
+                                    all levels have required fields
+     Ball.test.js      (2 tests)  - body label/position/slop, reset behavior
+     Block.test.js     (2 tests)  - static body, label and angle options
+     Hole.test.js      (1 test)   - static sensor body with correct label
+     Ramp.test.js      (1 test)   - polygon body, static, correct label
+     SpeedRamp.test.js (1 test)   - extends Block, correct label, static
+     Course.test.js    (2 tests)  - onWin activates on hole collision,
+                                    onLoss activates when ball stops
+     Engine.test.js    (4 tests)  - wall creation, placement validation,
+                                    block add/clear, level loading
+
+Result: PASS - 15/15 tests across 8 test files
+
+note: Rendering, canvas drawing, and audio are not covered by automated tests
+
+------------------------------------------------------------
+
+Manual Tests Summary
+
+Most recent test: 2026-03-12
+
+Scope: Full gameplay across all 20 levels across 4 web browsers - Firefox, Google Chrome, Microsoft Edge, Brave
+
+100% of tests must pass:
+- All elements of UI are functional
+- Consistent physics interactions
+- Levels generate correctly
+- Accurate ball trajectory
+- Accurate block placements and matching hitboxes
+- Working win/loss conditions
+- correct special obstacle interactions (Bomb Gnome, Speed Ramp),
+- All audio elements are working
