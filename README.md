@@ -1,5 +1,17 @@
 # Gnome in One
 
-## https://lynomi.github.io/gnome-in-one/
+A 2D browser-based golf game built where players attempt to guide a golf ball into a hole. Each level progresses in difficulty and gives you a number of unique blocks to place.
 
-kanban board: https://gokanban.io/fb19c5f0b0
+## How to Play
+
+### https://lynomi.github.io/gnome-in-one/
+
+## Functionality
+
+- **Build** - Place blocks, clear blocks, adjust angle and power of the ball, preview simulation trajectory.
+- **Swing** - Physics simulation runs. Player can reset to the build phase during the simulation.
+- **Result** 
+    - Win if the ball reaches the hole. Player is given the option to retry or advance to the next level.
+    - Lose if the ball does not reach the hole. Player is given the opion to retry.
+
+kanban: https://gokanban.io/fb19c5f0b0
