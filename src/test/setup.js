@@ -1,4 +1,4 @@
-// AudioContext — needs to be a class (new AudioContext()) not a plain mock fn
+// audio context
 class MockAudioContext {
     constructor() {
         this.state = 'running';
@@ -12,7 +12,7 @@ class MockAudioContext {
 }
 global.AudioContext = MockAudioContext;
 
-// Audio element — play() is not supported in jsdom
+// audio
 global.Audio = class MockAudio {
     constructor() {
         this.volume = 1;
@@ -23,7 +23,7 @@ global.Audio = class MockAudio {
     removeEventListener() {}
 };
 
-// fetch — used by Engine to load the swing audio buffer
+// fetch -used by Engine to load the swing audio buffer
 global.fetch = vi.fn().mockResolvedValue({
     arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(0)),
 });

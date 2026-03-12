@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import gitIconSrc from '/src/assets/gitIcon.png';
 import { Engine } from "./game/Engine";
 import { Ramp } from "./game/Ramp";
 import { Block } from "./game/Block";
@@ -329,6 +330,11 @@ export default function GameUI() {
             {/* title */}
             <div style={css.title}>GNOME IN ONE</div>
 
+            {/* github link */}
+            <a href="https://github.com/lynomi/gnome-in-one" target="_blank" rel="noopener noreferrer" style={css.githubLink}>
+                <img src={gitIconSrc} alt="GitHub" width={28} height={28} />
+            </a>
+
             {/* block panel */}
             <div style={{ ...css.leftPanel, opacity: phase === "BUILD" ? 1 : 0.5 }}>
                 <h3 style={css.leftPanelTitle}>Blocks</h3>
@@ -468,6 +474,16 @@ const css = {
         padding: "16px",
         gap: "16px",
         boxSizing: "border-box"
+    },
+
+    githubLink: {
+        position: "fixed",
+        top: "16px",
+        right: "16px",
+        zIndex: 100,
+        opacity: 0.7,
+        transition: "opacity 0.2s",
+        lineHeight: 0,
     },
 
     title: {
