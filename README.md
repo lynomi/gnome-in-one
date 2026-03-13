@@ -2,9 +2,7 @@
 
 A 2D browser-based golf game built where players attempt to guide a golf ball into a hole. Each level progresses in difficulty and gives you a number of unique blocks to place.
 
-## How to Play
-
-### https://lynomi.github.io/gnome-in-one/
+### Link: https://lynomi.github.io/gnome-in-one/
 
 ## Functionality
 
@@ -13,5 +11,9 @@ A 2D browser-based golf game built where players attempt to guide a golf ball in
 - **Result** 
     - Win if the ball reaches the hole. Player is given the option to retry or advance to the next level.
     - Lose if the ball does not reach the hole. Player is given the opion to retry.
-
-kanban board: https://gokanban.io/fb19c5f0b0
+- **Extra**
+    - Level select
+    - Background music & sound effects
+    - 4 blocks to choose from
+    - 20 custom levels
+    - Adjustable ball power and trajectory
